@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Line — Live Dashboard</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sarabun:wght@400;600;700&display=swap');
+:root{--bg:#060910;--sf:#0f1726;--sf2:#162038;--bd:#1e3050;--tx:#e4eaf3;--dim:#7a8da8;--mut:#455570;--acc:#22d3ee;--red:#ff6b6b;--grn:#69db7c;--ylw:#fcc419;--pur:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--tx);font-family:'Sarabun',sans-serif;min-height:100vh;
+  background-image:linear-gradient(rgba(30,48,80,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(30,48,80,.1) 1px,transparent 1px);background-size:40px 40px}
+.mono{font-family:'JetBrains Mono',monospace}
+.page{max-width:1200px;margin:0 auto;padding:20px 16px 60px}
+
+/* Header */
+.hdr{text-align:center;margin-bottom:16px}
+.hdr h1{font-family:'JetBrains Mono',monospace;font-size:1.2rem;font-weight:700;background:linear-gradient(135deg,#22d3ee,#a78bfa,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr p{color:var(--dim);font-size:.75rem;margin-top:2px}
+.live{display:none;align-items:center;justify-content:center;gap:5px;font-family:'JetBrains Mono',monospace;font-size:.62rem;padding:2px 8px;border-radius:10px;background:rgba(105,219,124,.08);border:1px solid rgba(105,219,124,.2);color:var(--grn);margin:4px auto 0;width:fit-content}
+.live.on{display:inline-flex}
+.dot-blink{width:5px;height:5px;border-radius:50%;background:var(--grn);animation:bk 1.5s infinite}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Config bar */
+.cfg{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:14px}
+.cfg-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.cfg-row:last-child{margin-bottom:0}
+.cfg label{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim);white-space:nowrap}
+.cfg input{flex:1;min-width:120px;padding:6px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:.72rem}
+.cfg input:focus{outline:none;border-color:var(--acc)}
+.cfg .tag{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:2px 5px;border-radius:3px;margin-left:4px}
+.tag-read{background:rgba(34,211,238,.1);color:var(--acc);border:1px solid rgba(34,211,238,.2)}
+.tag-write{background:rgba(167,139,250,.1);color:var(--pur);border:1px solid rgba(167,139,250,.2)}
+button{font-family:'JetBrains Mono',monospace;font-size:.68rem;padding:6px 12px;border-radius:7px;border:1px solid var(--bd);background:var(--sf2);color:var(--dim);cursor:pointer;white-space:nowrap}
+button:hover{background:var(--sf);color:var(--tx);border-color:var(--mut)}
+button:active{transform:scale(.97)}
+.btn-acc{border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08);color:var(--acc)}
+.btn-acc:hover{background:rgba(34,211,238,.15)}
+.btn-grn{border-color:rgba(105,219,124,.3);background:rgba(105,219,124,.08);color:var(--grn)}
+.btn-grn:hover{background:rgba(105,219,124,.15)}
+.btn-pur{border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.08);color:var(--pur)}
+.btn-pur:hover{background:rgba(167,139,250,.15)}
+.btn-red{border-color:rgba(255,107,107,.3);background:rgba(255,107,107,.08);color:var(--red)}
+.btn-red:hover{background:rgba(255,107,107,.15)}
+.smsg{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim);margin-left:4px}
+
+/* Toast */
+.toast{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:6px}
+.toast-item{padding:10px 16px;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:.72rem;animation:fadeIn .3s;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.toast-ok{background:rgba(105,219,124,.15);border:1px solid rgba(105,219,124,.3);color:var(--grn)}
+.toast-err{background:rgba(255,107,107,.15);border:1px solid rgba(255,107,107,.3);color:var(--red)}
+.toast-info{background:rgba(34,211,238,.15);border:1px solid rgba(34,211,238,.3);color:var(--acc)}
+
+/* Overview */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:6px;margin-bottom:16px}
+.ov{text-align:center;padding:10px 4px;background:var(--sf);border:1px solid var(--bd);border-radius:8px}
+.ov .v{font-family:'JetBrains Mono',monospace;font-size:1.5rem;font-weight:700}
+.ov .l{font-size:.62rem;color:var(--dim);margin-top:1px}
+
+/* Legend */
+.legend{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin-bottom:14px}
+.lg{display:flex;align-items:center;gap:3px;font-size:.58rem;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:4px;background:var(--sf);border:1px solid var(--bd)}
+.ldot{width:5px;height:5px;border-radius:50%}
+
+/* Section */
+.sec{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:.8rem;font-weight:600;color:var(--dim);margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--bd)}
+.sec .spacer{flex:1}
+
+/* Cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:10px;overflow:hidden}
+.c-head{padding:10px 12px 6px;display:flex;align-items:center;gap:7px}
+.c-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.68rem;color:#fff;flex-shrink:0}
+.c-title{font-size:.82rem;font-weight:700}
+.c-sub{font-size:.58rem;color:var(--dim)}
+.c-bar{margin:0 12px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+.c-fill{height:100%;border-radius:2px;transition:width .3s}
+.c-pct{text-align:right;padding:2px 12px 0;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600}
+.c-body{padding:4px 12px 10px}
+
+/* Device row */
+.dev{display:flex;align-items:center;gap:4px;padding:4px 2px;border-bottom:1px solid rgba(30,48,80,.25);font-size:.7rem;cursor:pointer;border-radius:3px}
+.dev:last-child{border-bottom:none}
+.dev:hover{background:rgba(255,255,255,.02)}
+.dev .ddot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dev .nm{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dev .cnt{font-family:'JetBrains Mono',monospace;font-size:.52rem;color:var(--mut)}
+.dev .ow{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:1px 4px;border-radius:3px;background:var(--sf2);color:var(--dim);flex-shrink:0}
+.dev .arrow{font-size:.5rem;color:var(--mut);flex-shrink:0;transition:transform .2s}
+.dev .arrow.rot{transform:rotate(180deg)}
+
+/* Tasks */
+.tlist{max-height:0;overflow:hidden;transition:max-height .3s ease;padding-left:10px}
+.tlist.open{max-height:800px}
+.trow{display:flex;align-items:center;gap:4px;padding:3px 0;font-size:.65rem;border-bottom:1px solid rgba(30,48,80,.12)}
+.trow:last-child{border-bottom:none}
+.trow .tn{flex:1;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.trow .st{font-size:.5rem;font-family:'JetBrains Mono',monospace;padding:1px 5px;border-radius:3px;font-weight:600;flex-shrink:0;cursor:pointer;white-space:nowrap}
+.trow .st:hover{filter:brightness(1.3)}
+.trow .edit-btn{font-size:.5rem;padding:1px 4px;cursor:pointer;opacity:.4;border:1px solid var(--bd);border-radius:3px;background:transparent;color:var(--dim)}
+.trow .edit-btn:hover{opacity:1}
+.st-done{background:rgba(105,219,124,.12);color:#69db7c}
+.st-testing{background:rgba(252,196,25,.12);color:#fcc419}
+.st-working{background:rgba(51,154,240,.12);color:#339af0}
+.st-waittest{background:rgba(167,139,250,.12);color:#a78bfa}
+.st-blocked{background:rgba(255,107,107,.12);color:#ff6b6b}
+.st-cancel{background:rgba(100,116,139,.12);color:#94a3b8;text-decoration:line-through}
+.st-notstart{background:rgba(123,143,173,.08);color:#7b8fad}
+
+/* Owner */
+.o-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.oc{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px;display:flex;align-items:center;gap:7px}
+.oc .av{width:28px;height:28px;border-radius:50%;background:var(--sf2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;flex-shrink:0}
+.oc .on{font-weight:700;font-size:.78rem}
+.oc .os{font-size:.6rem;color:var(--dim)}
+.oc .bars{display:flex;gap:2px;margin-top:2px}
+.oc .bars div{height:3px;border-radius:2px;min-width:2px}
+
+/* Blocker */
+.blk{background:rgba(255,107,107,.04);border:1px solid rgba(255,107,107,.15);border-radius:7px;padding:8px;margin-bottom:5px;font-size:.72rem}
+.blk b{color:var(--red)}
+.blk .bd{color:var(--dim);font-size:.65rem;margin-top:1px}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);z-index:1000;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
+.modal-bg.show{display:flex}
+.modal{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:20px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto}
+.modal h3{font-family:'JetBrains Mono',monospace;font-size:.9rem;margin-bottom:12px;color:var(--acc)}
+.modal .fg{margin-bottom:10px}
+.modal label{display:block;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim);margin-bottom:3px}
+.modal input,.modal select,.modal textarea{width:100%;padding:7px 9px;border-radius:6px;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);font-family:'Sarabun',sans-serif;font-size:.8rem}
+.modal input:focus,.modal select:focus,.modal textarea:focus{outline:none;border-color:var(--acc)}
+.modal select{cursor:pointer}
+.modal textarea{resize:vertical;min-height:50px}
+.modal .actions{display:flex;gap:6px;justify-content:flex-end;margin-top:14px}
+
+/* Status dropdown */
+.st-menu{position:absolute;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:4px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.st-menu .opt{display:flex;align-items:center;gap:6px;padding:5px 10px;font-size:.72rem;cursor:pointer;border-radius:5px;white-space:nowrap}
+.st-menu .opt:hover{background:var(--sf2)}
+.st-menu .opt .sdot{width:7px;height:7px;border-radius:50%}
+
+/* Debug */
+.dbg{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);max-height:160px;overflow-y:auto;display:none;white-space:pre-wrap}
+.dbg.show{display:block}
+
+.upd{text-align:center;font-size:.6rem;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:14px}
+.empty{text-align:center;padding:40px 16px;color:var(--mut)}
+.empty h2{color:var(--dim);font-size:.95rem;margin:8px 0 6px}
+.empty p{font-size:.78rem;max-width:440px;margin:0 auto;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div class="page">
+<div class="hdr">
+  <h1>🏭 AUTOMATION LINE — LIVE DASHBOARD</h1>
+  <p>ดึงข้อมูลจาก Google Sheet · เพิ่ม/แก้ Task จากที่นี่ได้เลย</p>
+  <div class="live" id="liveBadge"><div class="dot-blink"></div>LIVE<span class="tag tag-read">READ</span><span class="tag tag-write" id="writeTag" style="display:none">WRITE</span></div>
+</div>
+
+<div class="cfg">
+  <div class="cfg-row">
+    <label>📋 Sheet ID:</label>
+    <input id="inpSid" value="18IjXktdfLaqPelbI_2-5hIpKjVffs38Bvs1NGa89RlA" placeholder="Google Sheet ID">
+    <button class="btn-acc" onclick="doConnect()">🔗 Connect</button>
+    <button onclick="doRefresh()">🔄</button>
+    <button onclick="toggleDebug()">🐛</button>
+  </div>
+  <div class="cfg-row">
+    <label>⚡ Apps Script URL:</label>
+    <input id="inpScript" value="" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+    <button class="btn-pur" onclick="testScript()">🧪 Test</button>
+    <span class="smsg" id="stMsg">⏳ พร้อมเชื่อมต่อ</span>
+  </div>
+</div>
+
+<div id="content">
+  <div class="empty" id="emptyMsg">
+    <div style="font-size:2.2rem">📋</div>
+    <h2>กำลังเชื่อมต่อ Google Sheet...</h2>
+    <p>ถ้าไม่สำเร็จ ตรวจสอบ: 1) Publish to web แล้ว 2) Sheet ID ถูกต้อง<br>
+    ต้องการเพิ่ม Task จาก Dashboard? ใส่ Apps Script URL ด้วย</p>
+  </div>
+</div>
+
+<div class="dbg" id="dbg"></div>
+<div class="upd" id="upd"></div>
+</div>
+
+<!-- Toast container -->
+<div class="toast" id="toastBox"></div>
+
+<!-- Add Task Modal -->
+<div class="modal-bg" id="modalAdd">
+<div class="modal">
+  <h3>➕ เพิ่ม Task ใหม่</h3>
+  <div class="fg">
+    <label>Station</label>
+    <select id="addStation"></select>
+  </div>
+  <div class="fg">
+    <label>Device Name</label>
+    <input id="addDevice" placeholder="เช่น Duco Robot 12kg">
+  </div>
+  <div class="fg">
+    <label>Device Type</label>
+    <select id="addDtype">
+      <option value="robot">Robot</option><option value="amr">AMR</option>
+      <option value="plc">PLC</option><option value="hmi">HMI</option>
+      <option value="vision">Vision</option><option value="agf">AGF</option>
+      <option value="got">GOT</option><option value="other">Other</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Task Name</label>
+    <input id="addTask" placeholder="เช่น เขียนโปรแกรม welding path">
+  </div>
+  <div class="fg">
+    <label>Primary Owner</label>
+    <input id="addOwner" placeholder="ชื่อผู้รับผิดชอบ">
+  </div>
+  <div class="fg">
+    <label>Support</label>
+    <input id="addSupport" placeholder="(ไม่บังคับ)">
+  </div>
+  <div class="fg">
+    <label>Status</label>
+    <select id="addStatus">
+      <option value="ยังไม่เริ่ม">⚪ ยังไม่เริ่ม</option>
+      <option value="กำลังทำ">🟡 กำลังทำ</option>
+      <option value="เสร็จแล้วรอทดสอบ">🟣 เสร็จแล้วรอทดสอบ</option>
+      <option value="กำลังทดสอบ">🟤 กำลังทดสอบ</option>
+      <option value="เสร็จแล้วพร้อมใช้งาน">🟢 เสร็จแล้วพร้อมใช้งาน</option>
+      <option value="ติดปัญหา">🔴 ติดปัญหา</option>
+      <option value="ยกเลิก">⚫ ยกเลิก</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>IP Address</label>
+    <input id="addIp" placeholder="(ไม่บังคับ)">
+  </div>
+  <div class="fg">
+    <label>Note</label>
+    <textarea id="addNote" placeholder="(ไม่บังคับ)"></textarea>
+  </div>
+  <div class="actions">
+    <button onclick="closeModal('modalAdd')">ยกเลิก</button>
+    <button class="btn-grn" onclick="submitAdd()">✅ เพิ่ม Task</button>
+  </div>
+</div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal-bg" id="modalEdit">
+<div class="modal">
+  <h3>✏️ แก้ไข Task</h3>
+  <input type="hidden" id="editRow">
+  <div class="fg">
+    <label>Device Name</label>
+    <input id="editDevice">
+  </div>
+  <div class="fg">
+    <label>Device Type</label>
+    <select id="editDtype">
+      <option value="robot">Robot</option><option value="amr">AMR</option>
+      <option value="plc">PLC</option><option value="hmi">HMI</option>
+      <option value="vision">Vision</option><option value="agf">AGF</option>
+      <option value="got">GOT</option><option value="other">Other</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Task Name</label>
+    <input id="editTask">
+  </div>
+  <div class="fg">
+    <label>Primary Owner</label>
+    <input id="editOwner">
+  </div>
+  <div class="fg">
+    <label>Support</label>
+    <input id="editSupport">
+  </div>
+  <div class="fg">
+    <label>Status</label>
+    <select id="editStatus">
+      <option value="ยังไม่เริ่ม">⚪ ยังไม่เริ่ม</option>
+      <option value="กำลังทำ">🟡 กำลังทำ</option>
+      <option value="เสร็จแล้วรอทดสอบ">🟣 เสร็จแล้วรอทดสอบ</option>
+      <option value="กำลังทดสอบ">🟤 กำลังทดสอบ</option>
+      <option value="เสร็จแล้วพร้อมใช้งาน">🟢 เสร็จแล้วพร้อมใช้งาน</option>
+      <option value="ติดปัญหา">🔴 ติดปัญหา</option>
+      <option value="ยกเลิก">⚫ ยกเลิก</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>IP</label>
+    <input id="editIp">
+  </div>
+  <div class="fg">
+    <label>Note</label>
+    <textarea id="editNote"></textarea>
+  </div>
+  <div class="fg">
+    <label>Blocker</label>
+    <textarea id="editBlocker"></textarea>
+  </div>
+  <div class="actions">
+    <button class="btn-red" onclick="submitDelete()">🗑️ ลบ</button>
+    <div style="flex:1"></div>
+    <button onclick="closeModal('modalEdit')">ยกเลิก</button>
+    <button class="btn-grn" onclick="submitEdit()">💾 บันทึก</button>
+  </div>
+</div>
+</div>
+
+<!-- Status popup (positioned absolutely) -->
+<div class="st-menu" id="stMenu" style="display:none"></div>
+
+<script>
+// ============ GLOBALS ============
+var sheetId='', scriptUrl='';
+var stationRows=[], taskRows=[], nodes=[];
+var logs=[], cbCnt=0;
+var TC={robot:'#ff6b6b',amr:'#51cf66',plc:'#339af0',hmi:'#fcc419',vision:'#f06595',agf:'#ff922b',got:'#66d9e8',other:'#7a8da8'};
+var STATUSES=[
+  {v:'ยังไม่เริ่ม',emoji:'⚪',color:'#7b8fad'},
+  {v:'กำลังทำ',emoji:'🟡',color:'#339af0'},
+  {v:'เสร็จแล้วรอทดสอบ',emoji:'🟣',color:'#a78bfa'},
+  {v:'กำลังทดสอบ',emoji:'🟤',color:'#fcc419'},
+  {v:'เสร็จแล้วพร้อมใช้งาน',emoji:'🟢',color:'#69db7c'},
+  {v:'ติดปัญหา',emoji:'🔴',color:'#ff6b6b'},
+  {v:'ยกเลิก',emoji:'⚫',color:'#94a3b8'}
+];
+
+function mapSt(s){if(!s)return'ยังไม่เริ่ม';s=s.toString().trim();for(var i=0;i<STATUSES.length;i++){if(s===STATUSES[i].v)return s;}var m={'done':'เสร็จแล้วพร้อมใช้งาน','testing':'กำลังทดสอบ','coding':'กำลังทำ','connected':'กำลังทำ','blocked':'ติดปัญหา','cancelled':'ยกเลิก','notstarted':'ยังไม่เริ่ม'};return m[s.toLowerCase()]||'ยังไม่เริ่ม';}
+function stCls(s){var c={'เสร็จแล้วพร้อมใช้งาน':'st-done','กำลังทดสอบ':'st-testing','กำลังทำ':'st-working','เสร็จแล้วรอทดสอบ':'st-waittest','ติดปัญหา':'st-blocked','ยกเลิก':'st-cancel'};return c[s]||'st-notstart';}
+
+// ============ LOGGING ============
+function log(m){var t=new Date().toLocaleTimeString();logs.push('['+t+'] '+m);var e=document.getElementById('dbg');if(e)e.textContent=logs.join('\n');console.log('[DB] '+m);}
+function toggleDebug(){var e=document.getElementById('dbg');e.classList.toggle('show');}
+function setStatus(m){var e=document.getElementById('stMsg');if(e)e.textContent=m;}
+
+// ============ TOAST ============
+function toast(msg,type){
+  var box=document.getElementById('toastBox');
+  var d=document.createElement('div');
+  d.className='toast-item toast-'+(type||'info');
+  d.textContent=msg;
+  box.appendChild(d);
+  setTimeout(function(){d.style.opacity='0';setTimeout(function(){d.remove();},300);},3000);
+}
+
+// ============ MODAL ============
+function openModal(id){document.getElementById(id).classList.add('show');}
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+
+// ============ JSONP FETCH (read) ============
+function fetchSheet(name){
+  return new Promise(function(resolve,reject){
+    cbCnt++;var cb='gcb'+cbCnt+'_'+Date.now();
+    var url='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb+'&sheet='+encodeURIComponent(name);
+    log('Fetch: '+name);
+    window[cb]=function(resp){
+      try{
+        var rows=[];
+        if(resp&&resp.table){
+          var cols=[];for(var i=0;i<resp.table.cols.length;i++)cols.push((resp.table.cols[i].label||'col'+i).toString().trim().toLowerCase());
+          for(var r=0;r<resp.table.rows.length;r++){
+            var obj={_row:r+2};
+            for(var c=0;c<cols.length;c++){
+              var cell=resp.table.rows[r].c?resp.table.rows[r].c[c]:null;
+              obj[cols[c]]=cell?(cell.v!=null?String(cell.v):''):'';
+            }
+            rows.push(obj);
+          }
+        }
+        log(name+': '+rows.length+' rows');resolve(rows);
+      }catch(e){log(name+' err: '+e.message);reject(e);}
+      delete window[cb];var sc=document.getElementById('s_'+cb);if(sc)sc.remove();
+    };
+    var sc=document.createElement('script');sc.id='s_'+cb;sc.src=url;
+    sc.onerror=function(){log(name+' load err');delete window[cb];sc.remove();reject(new Error('Load fail: '+name));};
+    document.body.appendChild(sc);
+    setTimeout(function(){if(window[cb]){delete window[cb];if(sc.parentNode)sc.remove();reject(new Error('Timeout: '+name));}},15000);
+  });
+}
+
+function trySheets(names){
+  var idx=0;
+  function go(){if(idx>=names.length)return Promise.resolve([]);var n=names[idx++];
+    return fetchSheet(n).then(function(d){return d.length>0?(log('Using: '+n),d):go();}).catch(function(){return go();});}
+  return go();
+}
+
+// ============ APPS SCRIPT CALL (write) ============
+function callScript(params){
+  return new Promise(function(resolve,reject){
+    if(!scriptUrl){reject(new Error('ไม่ได้ใส่ Apps Script URL'));return;}
+    cbCnt++;var cb='scb'+cbCnt+'_'+Date.now();
+    params.callback=cb;
+    var qs=[];for(var k in params)qs.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k]));
+    var url=scriptUrl+'?'+qs.join('&');
+    log('Script call: '+params.action);
+    window[cb]=function(resp){
+      log('Script resp: '+JSON.stringify(resp));
+      if(resp&&resp.success)resolve(resp);
+      else reject(new Error(resp?resp.message:'Unknown error'));
+      delete window[cb];var sc=document.getElementById('s_'+cb);if(sc)sc.remove();
+    };
+    var sc=document.createElement('script');sc.id='s_'+cb;sc.src=url;
+    sc.onerror=function(){log('Script load err');delete window[cb];sc.remove();reject(new Error('Script load failed'));};
+    document.body.appendChild(sc);
+    setTimeout(function(){if(window[cb]){delete window[cb];if(sc.parentNode)sc.remove();reject(new Error('Script timeout'));}},20000);
+  });
+}
+
+// ============ CONNECT ============
+function doConnect(){
+  var sid=document.getElementById('inpSid').value.trim();
+  if(!sid){toast('ใส่ Sheet ID ก่อน','err');return;}
+  sheetId=sid;
+  scriptUrl=document.getElementById('inpScript').value.trim();
+  setStatus('⏳ กำลังเชื่อมต่อ...');
+  doRefresh();
+}
+
+function doRefresh(){
+  if(!sheetId){toast('ยังไม่มี Sheet ID','err');return;}
+  setStatus('⏳ กำลังดึงข้อมูล...');
+
+  trySheets(['stations','ชีต1','Sheet1']).then(function(sData){
+    stationRows=sData;
+    return trySheets(['tasks','devices','ชีต2','Sheet2']);
+  }).then(function(tData){
+    taskRows=tData;
+    if(stationRows.length===0){setStatus('❌ ไม่พบ stations');toast('ไม่พบ stations sheet','err');return;}
+    if(taskRows.length===0){setStatus('❌ ไม่พบ tasks');toast('ไม่พบ tasks sheet','err');return;}
+    buildNodes();
+    render();
+    setStatus('✅ เชื่อมต่อสำเร็จ');
+    var badge=document.getElementById('liveBadge');if(badge)badge.classList.add('on');
+    var wTag=document.getElementById('writeTag');if(wTag)wTag.style.display=scriptUrl?'inline':'none';
+    document.getElementById('upd').textContent='อัพเดท: '+new Date().toLocaleString('th-TH');
+  }).catch(function(err){
+    setStatus('❌ '+err.message);toast(err.message,'err');
+  });
+}
+
+function testScript(){
+  scriptUrl=document.getElementById('inpScript').value.trim();
+  if(!scriptUrl){toast('ใส่ Apps Script URL ก่อน','err');return;}
+  toast('กำลังทดสอบ...','info');
+  callScript({action:'ping'}).then(function(r){
+    toast('✅ เชื่อมต่อ Script สำเร็จ!','ok');
+    var wTag=document.getElementById('writeTag');if(wTag)wTag.style.display='inline';
+  }).catch(function(e){
+    toast('❌ '+e.message,'err');
+  });
+}
+
+// ============ BUILD NODES ============
+function buildNodes(){
+  nodes=[];
+  for(var si=0;si<stationRows.length;si++){
+    var s=stationRows[si];
+    var nid=parseInt(s.node_id);if(isNaN(nid))continue;
+    var myTasks=[];
+    for(var ti=0;ti<taskRows.length;ti++){if(parseInt(taskRows[ti].node_id)===nid)myTasks.push(taskRows[ti]);}
+    var devMap={};
+    var allT=[];
+    for(var ri=0;ri<myTasks.length;ri++){
+      var r=myTasks[ri];
+      var t={
+        _row:r._row,
+        device:r.device_name||r.name||'',dtype:r.device_type||r.type||'other',
+        task:r.task_name||r.task||r.device_name||r.name||'',
+        owner:r.primary_owner||r.owner||'',support:r.support||'',
+        status:mapSt(r.status),ip:r.ip||'',note:r.note||'',blocker:r.blocker||''
+      };
+      allT.push(t);
+      var dk=t.device;if(!devMap[dk])devMap[dk]={name:dk,dtype:t.dtype,ip:t.ip,tasks:[]};
+      if(t.ip&&!devMap[dk].ip)devMap[dk].ip=t.ip;
+      devMap[dk].tasks.push(t);
+    }
+    var devArr=[];for(var k in devMap)devArr.push(devMap[k]);
+    nodes.push({id:nid,type:(s.node_type||'station').toLowerCase().trim(),name:s.name||'',color:s.color||'#64748b',standalone:String(s.standalone).toUpperCase()==='TRUE',devices:devArr,allTasks:allT});
+  }
+  log('Nodes: '+nodes.length+', Tasks: '+nodes.reduce(function(a,n){return a+n.allTasks.length;},0));
+}
+
+// ============ RENDER ============
+function render(){
+  var allT=[];for(var i=0;i<nodes.length;i++)allT=allT.concat(nodes[i].allTasks);
+  var stations=[],transfers=[],standalones=[];
+  for(var i=0;i<nodes.length;i++){var n=nodes[i];if(n.standalone)standalones.push(n);else if(n.type==='transfer')transfers.push(n);else stations.push(n);}
+
+  var doneC=0,progC=0,notC=0,blkC=0;var blockers=[];
+  for(var i=0;i<allT.length;i++){var s=allT[i].status;if(s==='เสร็จแล้วพร้อมใช้งาน')doneC++;else if(s==='ยังไม่เริ่ม')notC++;else if(s==='ติดปัญหา')blkC++;else progC++;if(allT[i].blocker)blockers.push(allT[i]);}
+  var pct=allT.length?Math.round(doneC/allT.length*100):0;
+
+  var h='';
+
+  // Overview
+  h+='<div class="ov-grid">';
+  h+='<div class="ov"><div class="v" style="color:#22d3ee">'+stations.length+'</div><div class="l">Process</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#a78bfa">'+transfers.length+'</div><div class="l">Transfer</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#10b981">'+standalones.length+'</div><div class="l">Standalone</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#ff6b6b">'+allT.length+'</div><div class="l">Tasks</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#69db7c">'+doneC+'</div><div class="l">เสร็จ</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#fcc419">'+progC+'</div><div class="l">กำลังทำ</div></div>';
+  if(blkC)h+='<div class="ov" style="border-color:rgba(255,107,107,.3)"><div class="v" style="color:#ff6b6b">'+blkC+'</div><div class="l">ติดปัญหา</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#22d3ee">'+pct+'%</div><div class="l">Overall</div></div>';
+  h+='</div>';
+
+  // Legend
+  h+='<div class="legend">';
+  var tcK=['robot','amr','plc','hmi','vision','agf','got'];
+  for(var i=0;i<tcK.length;i++)h+='<div class="lg"><div class="ldot" style="background:'+TC[tcK[i]]+'"></div>'+tcK[i].toUpperCase()+'</div>';
+  h+='</div>';
+
+  // Blockers
+  if(blockers.length>0){
+    h+='<div class="sec">⚠️ BLOCKERS ('+blockers.length+')</div>';
+    for(var i=0;i<blockers.length;i++){var b=blockers[i];h+='<div class="blk"><b>⚠️ '+b.device+' — '+b.task+'</b><div class="bd">'+b.blocker+' · '+b.owner+'</div></div>';}
+  }
+
+  // Process + Standalone
+  h+='<div class="sec">📍 PROCESS STATIONS<div class="spacer"></div>';
+  if(scriptUrl)h+='<button class="btn-grn" onclick="openAddModal()">➕ เพิ่ม Task</button>';
+  h+='</div><div class="cards">';
+  var proc=stations.concat(standalones);
+  for(var i=0;i<proc.length;i++)h+=buildCard(proc[i]);
+  h+='</div>';
+
+  // Transfers
+  h+='<div class="sec">🔗 TRANSFERS</div><div class="cards">';
+  for(var i=0;i<transfers.length;i++)h+=buildCard(transfers[i]);
+  h+='</div>';
+
+  // Owners
+  var owners={};
+  for(var i=0;i<allT.length;i++){var o=allT[i].owner;if(!o)continue;if(!owners[o])owners[o]={done:0,prog:0,not:0,total:0};owners[o].total++;if(allT[i].status==='เสร็จแล้วพร้อมใช้งาน')owners[o].done++;else if(allT[i].status==='ยังไม่เริ่ม')owners[o].not++;else owners[o].prog++;}
+  var oArr=[];for(var k in owners)oArr.push([k,owners[k]]);
+  oArr.sort(function(a,b){return b[1].total-a[1].total;});
+
+  h+='<div class="sec">👥 OWNER WORKLOAD</div><div class="o-grid">';
+  for(var i=0;i<oArr.length;i++){
+    var nm=oArr[i][0],s=oArr[i][1],tt=s.total||1;
+    h+='<div class="oc"><div class="av">'+nm.charAt(0)+'</div><div style="flex:1"><div class="on">'+nm+'</div>';
+    h+='<div class="os">'+s.total+' tasks · '+s.done+' done</div>';
+    h+='<div class="bars"><div style="width:'+Math.round(s.done/tt*100)+'%;background:#69db7c"></div>';
+    h+='<div style="width:'+Math.round(s.prog/tt*100)+'%;background:#fcc419"></div>';
+    h+='<div style="width:'+Math.round(s.not/tt*100)+'%;background:#455570"></div></div></div></div>';
+  }
+  h+='</div>';
+
+  document.getElementById('content').innerHTML=h;
+}
+
+function buildCard(nd){
+  var total=nd.allTasks.length,done=0;
+  for(var i=0;i<nd.allTasks.length;i++)if(nd.allTasks[i].status==='เสร็จแล้วพร้อมใช้งาน')done++;
+  var pct=total?Math.round(done/total*100):0;
+  var icon=nd.type==='transfer'?'↔':nd.standalone?'★':'●';
+
+  var h='<div class="card" style="border-color:'+nd.color+'25">';
+  h+='<div class="c-head"><div class="c-icon" style="background:'+nd.color+'">'+icon+'</div>';
+  h+='<div><div class="c-title" style="color:'+nd.color+'">'+nd.name;
+  if(nd.standalone)h+=' <span style="font-size:.5rem;opacity:.5">(SA)</span>';
+  h+='</div><div class="c-sub">'+nd.devices.length+' devices · '+total+' tasks</div></div></div>';
+  h+='<div class="c-bar"><div class="c-fill" style="width:'+pct+'%;background:'+nd.color+'"></div></div>';
+  h+='<div class="c-pct" style="color:'+nd.color+'">'+done+'/'+total+' ('+pct+'%)</div>';
+  h+='<div class="c-body">';
+
+  for(var di=0;di<nd.devices.length;di++){
+    var dev=nd.devices[di],tc=TC[dev.dtype]||TC.other;
+    var dd=0;for(var ti=0;ti<dev.tasks.length;ti++)if(dev.tasks[ti].status==='เสร็จแล้วพร้อมใช้งาน')dd++;
+    var tid='tl_'+nd.id+'_'+di;
+
+    h+='<div class="dev" onclick="toggleTL(\''+tid+'\')">';
+    h+='<div class="ddot" style="background:'+tc+'"></div>';
+    h+='<span class="nm">'+dev.name+'</span>';
+    h+='<span class="cnt">'+dd+'/'+dev.tasks.length+'</span>';
+    if(dev.tasks[0])h+='<span class="ow">'+dev.tasks[0].owner+'</span>';
+    h+='<span class="arrow" id="ar_'+tid+'">▼</span></div>';
+
+    h+='<div class="tlist" id="'+tid+'">';
+    for(var ti=0;ti<dev.tasks.length;ti++){
+      var t=dev.tasks[ti];
+      h+='<div class="trow">';
+      h+='<span class="tn">'+t.task+'</span>';
+      h+='<span class="st '+stCls(t.status)+'" onclick="event.stopPropagation();showStMenu(this,'+t._row+')">'+t.status+'</span>';
+      if(scriptUrl)h+='<span class="edit-btn" onclick="event.stopPropagation();openEditModal('+t._row+')">✏️</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
+
+  h+='</div></div>';
+  return h;
+}
+
+function toggleTL(id){
+  var el=document.getElementById(id);if(!el)return;
+  el.classList.toggle('open');
+  var ar=document.getElementById('ar_'+id);if(ar)ar.classList.toggle('rot');
+}
+
+// ============ STATUS QUICK CHANGE ============
+function showStMenu(el,row){
+  if(!scriptUrl){toast('ใส่ Apps Script URL ก่อนถึงจะแก้ status ได้','err');return;}
+  var menu=document.getElementById('stMenu');
+  var rect=el.getBoundingClientRect();
+  var h='';
+  for(var i=0;i<STATUSES.length;i++){
+    var s=STATUSES[i];
+    h+='<div class="opt" onclick="changeStatus('+row+',\''+s.v+'\')"><div class="sdot" style="background:'+s.color+'"></div>'+s.emoji+' '+s.v+'</div>';
+  }
+  menu.innerHTML=h;
+  menu.style.display='block';
+  menu.style.left=Math.min(rect.left,window.innerWidth-220)+'px';
+  menu.style.top=(rect.bottom+4)+'px';
+
+  setTimeout(function(){
+    document.addEventListener('click',hideStMenu,{once:true});
+  },10);
+}
+function hideStMenu(){document.getElementById('stMenu').style.display='none';}
+
+function changeStatus(row,newStatus){
+  hideStMenu();
+  toast('กำลังอัพเดท...','info');
+  callScript({action:'update_status',row:row,status:newStatus}).then(function(){
+    toast('✅ อัพเดทสำเร็จ!','ok');
+    setTimeout(doRefresh,500);
+  }).catch(function(e){toast('❌ '+e.message,'err');});
+}
+
+// ============ ADD TASK ============
+function openAddModal(){
+  if(!scriptUrl){toast('ใส่ Apps Script URL ก่อน','err');return;}
+  // Populate station dropdown
+  var sel=document.getElementById('addStation');
+  sel.innerHTML='';
+  for(var i=0;i<nodes.length;i++){
+    var n=nodes[i];
+    sel.innerHTML+='<option value="'+n.id+'">'+n.name+'</option>';
+  }
+  // Clear fields
+  document.getElementById('addDevice').value='';
+  document.getElementById('addTask').value='';
+  document.getElementById('addOwner').value='';
+  document.getElementById('addSupport').value='';
+  document.getElementById('addStatus').value='ยังไม่เริ่ม';
+  document.getElementById('addIp').value='';
+  document.getElementById('addNote').value='';
+  openModal('modalAdd');
+}
+
+function submitAdd(){
+  var p={
+    action:'add_task',
+    node_id:document.getElementById('addStation').value,
+    device_name:document.getElementById('addDevice').value.trim(),
+    device_type:document.getElementById('addDtype').value,
+    task_name:document.getElementById('addTask').value.trim(),
+    primary_owner:document.getElementById('addOwner').value.trim(),
+    support:document.getElementById('addSupport').value.trim(),
+    status:document.getElementById('addStatus').value,
+    ip:document.getElementById('addIp').value.trim(),
+    note:document.getElementById('addNote').value.trim()
+  };
+  if(!p.device_name||!p.task_name){toast('กรอก Device Name และ Task Name','err');return;}
+  toast('กำลังเพิ่ม...','info');
+  closeModal('modalAdd');
+  callScript(p).then(function(r){
+    toast('✅ เพิ่ม Task สำเร็จ!','ok');
+    setTimeout(doRefresh,500);
+  }).catch(function(e){toast('❌ '+e.message,'err');});
+}
+
+// ============ EDIT TASK ============
+function openEditModal(row){
+  if(!scriptUrl){toast('ใส่ Apps Script URL ก่อน','err');return;}
+  // Find the task by row
+  var t=null;
+  for(var i=0;i<taskRows.length;i++){if(taskRows[i]._row===row){t=taskRows[i];break;}}
+  if(!t){toast('ไม่พบ task row '+row,'err');return;}
+
+  document.getElementById('editRow').value=row;
+  document.getElementById('editDevice').value=t.device_name||t.name||'';
+  document.getElementById('editDtype').value=t.device_type||t.type||'other';
+  document.getElementById('editTask').value=t.task_name||t.task||'';
+  document.getElementById('editOwner').value=t.primary_owner||t.owner||'';
+  document.getElementById('editSupport').value=t.support||'';
+  document.getElementById('editStatus').value=mapSt(t.status);
+  document.getElementById('editIp').value=t.ip||'';
+  document.getElementById('editNote').value=t.note||'';
+  document.getElementById('editBlocker').value=t.blocker||'';
+  openModal('modalEdit');
+}
+
+function submitEdit(){
+  var row=document.getElementById('editRow').value;
+  var p={
+    action:'update_task',row:row,
+    device_name:document.getElementById('editDevice').value.trim(),
+    device_type:document.getElementById('editDtype').value,
+    task_name:document.getElementById('editTask').value.trim(),
+    primary_owner:document.getElementById('editOwner').value.trim(),
+    support:document.getElementById('editSupport').value.trim(),
+    status:document.getElementById('editStatus').value,
+    ip:document.getElementById('editIp').value.trim(),
+    note:document.getElementById('editNote').value.trim(),
+    blocker:document.getElementById('editBlocker').value.trim()
+  };
+  toast('กำลังบันทึก...','info');
+  closeModal('modalEdit');
+  callScript(p).then(function(){
+    toast('✅ บันทึกสำเร็จ!','ok');
+    setTimeout(doRefresh,500);
+  }).catch(function(e){toast('❌ '+e.message,'err');});
+}
+
+function submitDelete(){
+  var row=document.getElementById('editRow').value;
+  if(!confirm('ลบ Task นี้จริงๆ?'))return;
+  toast('กำลังลบ...','info');
+  closeModal('modalEdit');
+  callScript({action:'delete_task',row:row}).then(function(){
+    toast('✅ ลบสำเร็จ!','ok');
+    setTimeout(doRefresh,500);
+  }).catch(function(e){toast('❌ '+e.message,'err');});
+}
+
+// ============ AUTO REFRESH ============
+setInterval(function(){if(sheetId)doRefresh();},60000);
+
+// ============ CLICK OUTSIDE MODAL ============
+document.addEventListener('click',function(e){
+  if(e.target.classList.contains('modal-bg'))e.target.classList.remove('show');
+});
+
+// ============ INIT ============
+var initSid=document.getElementById('inpSid');
+if(initSid&&initSid.value.trim()){sheetId=initSid.value.trim();doRefresh();}
+</script>
+</body>
+</html>
