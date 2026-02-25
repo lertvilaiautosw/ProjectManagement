@@ -146,6 +146,13 @@ button:active{transform:scale(.97)}
 .dbg{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:8px;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);max-height:160px;overflow-y:auto;display:none;white-space:pre-wrap}
 .dbg.show{display:block}
 
+/* Loading spinner on task row */
+.trow.loading{opacity:.6}
+.trow.loading .tn::after{content:'';display:none}
+.spinner{display:inline-block;width:12px;height:12px;border:2px solid var(--bd);border-top-color:var(--acc);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0;margin-left:4px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.saving-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;color:var(--acc);flex-shrink:0}
+
 .upd{text-align:center;font-size:.6rem;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-top:14px}
 .empty{text-align:center;padding:40px 16px;color:var(--mut)}
 .empty h2{color:var(--dim);font-size:.95rem;margin:8px 0 6px}
@@ -324,6 +331,8 @@ button:active{transform:scale(.97)}
 var sheetId='', scriptUrl='';
 var stationRows=[], taskRows=[], nodes=[];
 var logs=[], cbCnt=0;
+var expandedIds={}; // จำว่า task list ไหนกางอยู่
+var loadingRows={}; // แถวที่กำลัง saving อยู่
 var TC={robot:'#ff6b6b',amr:'#51cf66',plc:'#339af0',hmi:'#fcc419',vision:'#f06595',agf:'#ff922b',got:'#66d9e8',other:'#7a8da8'};
 var STATUSES=[
   {v:'ยังไม่เริ่ม',emoji:'⚪',color:'#7b8fad'},
@@ -429,6 +438,7 @@ function doConnect(){
 
 function doRefresh(){
   if(!sheetId){toast('ยังไม่มี Sheet ID','err');return;}
+  var scrollY=window.scrollY; // จำตำแหน่ง scroll
   setStatus('⏳ กำลังดึงข้อมูล...');
 
   trySheets(['stations','ชีต1','Sheet1']).then(function(sData){
@@ -440,7 +450,10 @@ function doRefresh(){
     if(taskRows.length===0){setStatus('❌ ไม่พบ tasks');toast('ไม่พบ tasks sheet','err');return;}
     buildNodes();
     render();
-    setStatus('✅ เชื่อมต่อสำเร็จ');
+    window.scrollTo(0,scrollY); // คืนตำแหน่ง scroll
+    lastDataHash=dataHash();
+    startAutoRefresh();
+    setStatus('✅ LIVE (ทุก 5 วิ)');
     var badge=document.getElementById('liveBadge');if(badge)badge.classList.add('on');
     var wTag=document.getElementById('writeTag');if(wTag)wTag.style.display=scriptUrl?'inline':'none';
     document.getElementById('upd').textContent='อัพเดท: '+new Date().toLocaleString('th-TH');
@@ -558,6 +571,12 @@ function render(){
   h+='</div>';
 
   document.getElementById('content').innerHTML=h;
+
+  // Restore expanded task lists
+  for(var eid in expandedIds){
+    var el=document.getElementById(eid);if(el)el.classList.add('open');
+    var ar=document.getElementById('ar_'+eid);if(ar)ar.classList.add('rot');
+  }
 }
 
 function buildCard(nd){
@@ -590,10 +609,15 @@ function buildCard(nd){
     h+='<div class="tlist" id="'+tid+'">';
     for(var ti=0;ti<dev.tasks.length;ti++){
       var t=dev.tasks[ti];
-      h+='<div class="trow">';
+      var isLoading=!!loadingRows[t._row];
+      h+='<div class="trow'+(isLoading?' loading':'')+'" id="tr_'+t._row+'">';
       h+='<span class="tn">'+t.task+'</span>';
-      h+='<span class="st '+stCls(t.status)+'" onclick="event.stopPropagation();showStMenu(this,'+t._row+')">'+t.status+'</span>';
-      if(scriptUrl)h+='<span class="edit-btn" onclick="event.stopPropagation();openEditModal('+t._row+')">✏️</span>';
+      if(isLoading){
+        h+='<span class="saving-label">saving</span><span class="spinner"></span>';
+      }else{
+        h+='<span class="st '+stCls(t.status)+'" onclick="event.stopPropagation();showStMenu(this,'+t._row+')">'+t.status+'</span>';
+        if(scriptUrl)h+='<span class="edit-btn" onclick="event.stopPropagation();openEditModal('+t._row+')">✏️</span>';
+      }
       h+='</div>';
     }
     h+='</div>';
@@ -605,7 +629,8 @@ function buildCard(nd){
 
 function toggleTL(id){
   var el=document.getElementById(id);if(!el)return;
-  el.classList.toggle('open');
+  var isOpen=el.classList.toggle('open');
+  if(isOpen)expandedIds[id]=true; else delete expandedIds[id];
   var ar=document.getElementById('ar_'+id);if(ar)ar.classList.toggle('rot');
 }
 
@@ -632,11 +657,27 @@ function hideStMenu(){document.getElementById('stMenu').style.display='none';}
 
 function changeStatus(row,newStatus){
   hideStMenu();
-  toast('กำลังอัพเดท...','info');
+  setRowLoading(row,true);
   callScript({action:'update_status',row:row,status:newStatus}).then(function(){
     toast('✅ อัพเดทสำเร็จ!','ok');
-    setTimeout(doRefresh,500);
-  }).catch(function(e){toast('❌ '+e.message,'err');});
+    setRowLoading(row,false);
+    quickRefresh();
+  }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
+}
+
+// แสดง/ซ่อน loading บน task row ทันที ไม่ต้อง re-render ทั้งหมด
+function setRowLoading(row,isLoading){
+  if(isLoading)loadingRows[row]=true; else delete loadingRows[row];
+  var el=document.getElementById('tr_'+row);
+  if(!el)return;
+  if(isLoading){
+    el.classList.add('loading');
+    // แทนที่ status badge ด้วย spinner
+    var stEl=el.querySelector('.st');
+    var editEl=el.querySelector('.edit-btn');
+    if(stEl)stEl.outerHTML='<span class="saving-label">saving</span><span class="spinner"></span>';
+    if(editEl)editEl.remove();
+  }
 }
 
 // ============ ADD TASK ============
@@ -678,7 +719,7 @@ function submitAdd(){
   closeModal('modalAdd');
   callScript(p).then(function(r){
     toast('✅ เพิ่ม Task สำเร็จ!','ok');
-    setTimeout(doRefresh,500);
+    quickRefresh();
   }).catch(function(e){toast('❌ '+e.message,'err');});
 }
 
@@ -717,27 +758,74 @@ function submitEdit(){
     note:document.getElementById('editNote').value.trim(),
     blocker:document.getElementById('editBlocker').value.trim()
   };
-  toast('กำลังบันทึก...','info');
   closeModal('modalEdit');
+  setRowLoading(row,true);
   callScript(p).then(function(){
     toast('✅ บันทึกสำเร็จ!','ok');
-    setTimeout(doRefresh,500);
-  }).catch(function(e){toast('❌ '+e.message,'err');});
+    setRowLoading(row,false);
+    quickRefresh();
+  }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
 }
 
 function submitDelete(){
   var row=document.getElementById('editRow').value;
   if(!confirm('ลบ Task นี้จริงๆ?'))return;
-  toast('กำลังลบ...','info');
   closeModal('modalEdit');
+  setRowLoading(row,true);
   callScript({action:'delete_task',row:row}).then(function(){
     toast('✅ ลบสำเร็จ!','ok');
-    setTimeout(doRefresh,500);
-  }).catch(function(e){toast('❌ '+e.message,'err');});
+    delete loadingRows[row];
+    quickRefresh();
+  }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
 }
 
 // ============ AUTO REFRESH ============
-setInterval(function(){if(sheetId)doRefresh();},60000);
+var lastDataHash='';
+var refreshTimer=null;
+var REFRESH_INTERVAL=5000; // 5 วินาที
+
+function dataHash(){
+  // สร้าง hash ง่ายๆ จากข้อมูล เพื่อเช็คว่าเปลี่ยนไหม
+  var s='';
+  for(var i=0;i<taskRows.length;i++){
+    var r=taskRows[i];
+    s+=(r.status||'')+(r.task_name||r.task||'')+(r.blocker||'');
+  }
+  return s;
+}
+
+function silentRefresh(){
+  if(!sheetId)return;
+  var scrollY=window.scrollY;
+
+  trySheets(['stations','ชีต1','Sheet1']).then(function(sData){
+    stationRows=sData;
+    return trySheets(['tasks','devices','ชีต2','Sheet2']);
+  }).then(function(tData){
+    taskRows=tData;
+    if(stationRows.length===0||taskRows.length===0)return;
+
+    // เช็คว่าข้อมูลเปลี่ยนไหม ถ้าไม่เปลี่ยนไม่ต้อง re-render
+    var newHash=dataHash();
+    if(newHash===lastDataHash)return;
+    lastDataHash=newHash;
+
+    buildNodes();
+    render();
+    window.scrollTo(0,scrollY);
+    document.getElementById('upd').textContent='อัพเดท: '+new Date().toLocaleString('th-TH');
+  }).catch(function(){});
+}
+
+function startAutoRefresh(){
+  if(refreshTimer)clearInterval(refreshTimer);
+  refreshTimer=setInterval(silentRefresh,REFRESH_INTERVAL);
+}
+
+// Immediate refresh (หลังแก้ข้อมูล)
+function quickRefresh(){
+  setTimeout(function(){silentRefresh();},800);
+}
 
 // ============ CLICK OUTSIDE MODAL ============
 document.addEventListener('click',function(e){
