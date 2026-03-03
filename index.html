@@ -75,6 +75,10 @@ button:active{transform:scale(.97)}
 .c-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.68rem;color:#fff;flex-shrink:0}
 .c-title{font-size:.82rem;font-weight:700}
 .c-sub{font-size:.58rem;color:var(--dim)}
+
+/* Card add button */
+.btn-card-add{width:26px;height:26px;border-radius:50%;border:1px solid rgba(105,219,124,.3);background:rgba(105,219,124,.08);color:var(--grn);font-size:.9rem;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;padding:0;line-height:1}
+.btn-card-add:hover{background:rgba(105,219,124,.2);transform:scale(1.1)}
 .c-bar{margin:0 12px;height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
 .c-fill{height:100%;border-radius:2px;transition:width .3s}
 .c-pct{text-align:right;padding:2px 12px 0;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600}
@@ -101,6 +105,7 @@ button:active{transform:scale(.97)}
 .trow .st:hover{filter:brightness(1.3)}
 .trow .edit-btn{font-size:.5rem;padding:1px 4px;cursor:pointer;opacity:.4;border:1px solid var(--bd);border-radius:3px;background:transparent;color:var(--dim)}
 .trow .edit-btn:hover{opacity:1}
+.trow.dimmed{opacity:.2;pointer-events:none}
 .st-done{background:rgba(105,219,124,.12);color:#69db7c}
 .st-testing{background:rgba(252,196,25,.12);color:#fcc419}
 .st-working{background:rgba(51,154,240,.12);color:#339af0}
@@ -137,7 +142,7 @@ button:active{transform:scale(.97)}
 .modal .actions{display:flex;gap:6px;justify-content:flex-end;margin-top:14px}
 
 /* Status dropdown */
-.st-menu{position:absolute;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:4px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.st-menu{position:fixed;background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:4px;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.4);max-height:280px;overflow-y:auto}
 .st-menu .opt{display:flex;align-items:center;gap:6px;padding:5px 10px;font-size:.72rem;cursor:pointer;border-radius:5px;white-space:nowrap}
 .st-menu .opt:hover{background:var(--sf2)}
 .st-menu .opt .sdot{width:7px;height:7px;border-radius:50%}
@@ -157,6 +162,96 @@ button:active{transform:scale(.97)}
 .empty{text-align:center;padding:40px 16px;color:var(--mut)}
 .empty h2{color:var(--dim);font-size:.95rem;margin:8px 0 6px}
 .empty p{font-size:.78rem;max-width:440px;margin:0 auto;line-height:1.5}
+
+/* Status overview with stacked bar */
+.status-overview{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;margin-bottom:16px}
+.so-bar{display:flex;gap:2px;height:10px;border-radius:5px;overflow:hidden;background:var(--bg);margin-bottom:8px}
+.so-chips{display:flex;flex-wrap:wrap;gap:5px 12px;justify-content:center}
+.so-chip{display:flex;align-items:center;gap:4px;font-size:.68rem;color:var(--dim)}
+.so-chip b{color:var(--tx);font-family:'JetBrains Mono',monospace}
+.so-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* Deadline alerts */
+.dl-item{display:flex;align-items:center;gap:6px;padding:7px 10px;margin-bottom:4px;border-radius:7px;font-size:.72rem;flex-wrap:wrap}
+.dl-overdue{background:rgba(255,107,107,.06);border:1px solid rgba(255,107,107,.15)}
+.dl-soon{background:rgba(252,196,25,.06);border:1px solid rgba(252,196,25,.15)}
+.dl-badge{font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:4px;flex-shrink:0}
+.dl-badge-red{background:rgba(255,107,107,.15);color:#ff6b6b}
+.dl-badge-ylw{background:rgba(252,196,25,.15);color:#fcc419}
+.dl-name{flex:1;font-weight:600;min-width:120px}
+.dl-owner{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:1px 5px;border-radius:3px;background:var(--sf2);color:var(--dim);flex-shrink:0}
+.dl-date{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--mut);flex-shrink:0}
+
+/* Recently completed */
+.done-list{display:flex;flex-direction:column;gap:3px}
+.done-item{display:flex;align-items:center;gap:6px;padding:6px 10px;background:rgba(105,219,124,.03);border:1px solid rgba(105,219,124,.1);border-radius:7px;font-size:.72rem}
+.done-check{flex-shrink:0;font-size:.7rem}
+.done-name{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.done-owner{font-family:'JetBrains Mono',monospace;font-size:.6rem;padding:1px 5px;border-radius:3px;background:var(--sf2);color:var(--dim);flex-shrink:0}
+.done-date{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--grn);flex-shrink:0}
+
+/* Mini deadline badge on task row */
+.dl-mini{font-family:'JetBrains Mono',monospace;font-size:.45rem;font-weight:700;padding:1px 4px;border-radius:3px;flex-shrink:0}
+.dl-mini-red{background:rgba(255,107,107,.15);color:#ff6b6b}
+.dl-mini-ylw{background:rgba(252,196,25,.15);color:#fcc419}
+
+/* Sync items */
+.sync-item{display:flex;align-items:center;gap:6px;padding:6px 8px;margin-bottom:3px;background:var(--sf2);border:1px solid var(--bd);border-radius:6px;font-size:.72rem}
+.sync-item .si-station{font-weight:600;color:var(--acc);min-width:100px}
+.sync-item .si-task{flex:1;color:var(--dim)}
+.sync-item .si-st{font-size:.55rem}
+
+/* Filter bar */
+.filter-bar{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.filter-bar select{padding:5px 8px;border-radius:6px;border:1px solid var(--bd);background:var(--sf2);color:var(--tx);font-family:'Sarabun',sans-serif;font-size:.75rem;cursor:pointer;min-width:100px}
+.filter-bar select:focus{outline:none;border-color:var(--acc)}
+.filter-bar label{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);white-space:nowrap}
+.filter-bar .f-group{display:flex;align-items:center;gap:4px}
+.btn-my{border-color:rgba(34,211,238,.3);background:rgba(34,211,238,.08);color:var(--acc);font-weight:600}
+.btn-my.active{background:rgba(34,211,238,.2);border-color:var(--acc);color:#fff}
+.filter-count{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim)}
+
+/* My view panel */
+.my-panel{background:var(--sf);border:1px solid rgba(34,211,238,.2);border-radius:12px;padding:16px;margin-bottom:16px}
+.my-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.my-header h2{font-family:'JetBrains Mono',monospace;font-size:.95rem;color:var(--acc);flex:1}
+.my-stats{display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.my-stat{text-align:center;padding:8px 14px;background:var(--sf2);border:1px solid var(--bd);border-radius:8px;min-width:70px}
+.my-stat .mv{font-family:'JetBrains Mono',monospace;font-size:1.3rem;font-weight:700}
+.my-stat .ml{font-size:.6rem;color:var(--dim);margin-top:1px}
+.my-task{display:flex;align-items:center;gap:6px;padding:7px 8px;margin-bottom:3px;background:var(--sf2);border:1px solid var(--bd);border-radius:7px;font-size:.72rem}
+.my-task .mt-station{font-family:'JetBrains Mono',monospace;font-size:.55rem;padding:1px 5px;border-radius:3px;background:var(--bg);color:var(--dim);flex-shrink:0;min-width:60px;text-align:center}
+.my-task .mt-dev{font-weight:600;color:var(--tx);min-width:80px;flex-shrink:0}
+.my-task .mt-name{flex:1;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.my-task .mt-dl{font-family:'JetBrains Mono',monospace;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.mt-dl-red{background:rgba(255,107,107,.15);color:#ff6b6b}
+.mt-dl-ylw{background:rgba(252,196,25,.15);color:#fcc419}
+.mt-dl-grn{background:rgba(105,219,124,.1);color:var(--dim)}
+.my-section{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--dim);margin:10px 0 5px;padding-bottom:3px;border-bottom:1px solid var(--bd)}
+
+/* Report button */
+.btn-rpt{background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.3);color:#a78bfa;font-size:.7rem;padding:4px 12px;border-radius:6px;cursor:pointer;font-family:'Sarabun',sans-serif}
+.btn-rpt:hover{background:rgba(167,139,250,.2)}
+
+/* Report panel */
+.rpt-panel{background:var(--sf);border:1px solid rgba(167,139,250,.2);border-radius:12px;padding:16px;margin-bottom:16px}
+.rpt-panel h2{font-family:'JetBrains Mono',monospace;font-size:.9rem;color:#a78bfa;margin-bottom:12px}
+.rpt-table{width:100%;border-collapse:collapse;font-size:.7rem}
+.rpt-table th{text-align:left;font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);padding:6px 8px;border-bottom:1px solid var(--bd);white-space:nowrap}
+.rpt-table td{padding:6px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+.rpt-table tr:hover{background:var(--sf2)}
+.rpt-name{font-weight:600;display:flex;align-items:center;gap:6px}
+.rpt-av{width:22px;height:22px;border-radius:50%;background:var(--acc);color:var(--bg);display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;flex-shrink:0}
+.rpt-bar{height:6px;border-radius:3px;background:var(--bg);overflow:hidden;min-width:60px}
+.rpt-bar div{height:100%;border-radius:3px}
+.rpt-score{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.85rem}
+.rpt-badge{font-family:'JetBrains Mono',monospace;font-size:.5rem;font-weight:700;padding:2px 6px;border-radius:4px}
+.rpt-badge-s{background:rgba(105,219,124,.15);color:#69db7c}
+.rpt-badge-a{background:rgba(34,211,238,.15);color:#22d3ee}
+.rpt-badge-b{background:rgba(252,196,25,.15);color:#fcc419}
+.rpt-badge-c{background:rgba(255,107,107,.15);color:#ff6b6b}
+.rpt-detail{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--mut)}
+.rpt-loading{text-align:center;padding:20px;color:var(--dim);font-size:.75rem}
 </style>
 </head>
 <body>
@@ -178,7 +273,7 @@ button:active{transform:scale(.97)}
   </div>
   <div class="cfg-row">
     <label>⚡ Apps Script URL:</label>
-    <input id="inpScript" value="https://script.google.com/macros/s/AKfycbyQC_6nF0f5kWKw_G8pm0pr15xJi3qUYWA7rkm2a_VhF-H0hGlML8m0TPUKKBlK3vX4vQ/exec" placeholder="https://script.google.com/macros/s/xxxxx/exec">
+    <input id="inpScript" value="https://script.google.com/macros/s/AKfycbyHYmCkCeN3LOMZYWF9ljJt1NHC77CrTEjoBLeOEoantmbUBFZanQWAfwK71Wyp3pfdpw/exec" placeholder="https://script.google.com/macros/s/xxxxx/exec">
     <button class="btn-pur" onclick="testScript()">🧪 Test</button>
     <span class="smsg" id="stMsg">⏳ พร้อมเชื่อมต่อ</span>
   </div>
@@ -206,11 +301,17 @@ button:active{transform:scale(.97)}
   <h3>➕ เพิ่ม Task ใหม่</h3>
   <div class="fg">
     <label>Station</label>
-    <select id="addStation"></select>
+    <select id="addStation" onchange="onStationChange()"></select>
   </div>
   <div class="fg">
     <label>Device Name</label>
-    <input id="addDevice" placeholder="เช่น Duco Robot 12kg">
+    <select id="addDevice" onchange="onDeviceSelect()">
+      <option value="">-- เลือก Device --</option>
+    </select>
+  </div>
+  <div class="fg" id="addNewDevWrap" style="display:none">
+    <label>ชื่อ Device ใหม่</label>
+    <input id="addNewDev" placeholder="เช่น Duco Robot 12kg">
   </div>
   <div class="fg">
     <label>Device Type</label>
@@ -225,13 +326,15 @@ button:active{transform:scale(.97)}
     <label>Task Name</label>
     <input id="addTask" placeholder="เช่น เขียนโปรแกรม welding path">
   </div>
-  <div class="fg">
-    <label>Primary Owner</label>
-    <input id="addOwner" placeholder="ชื่อผู้รับผิดชอบ">
-  </div>
-  <div class="fg">
-    <label>Support</label>
-    <input id="addSupport" placeholder="(ไม่บังคับ)">
+  <div class="fg" style="display:flex;gap:8px">
+    <div style="flex:1">
+      <label>Primary Owner</label>
+      <select id="addOwner" onchange="onOwnerChange('addOwner')"><option value="">-- เลือก --</option></select>
+    </div>
+    <div style="flex:1">
+      <label>Support</label>
+      <select id="addSupport" onchange="onOwnerChange('addSupport')"><option value="">(ไม่มี)</option></select>
+    </div>
   </div>
   <div class="fg">
     <label>Status</label>
@@ -245,9 +348,9 @@ button:active{transform:scale(.97)}
       <option value="ยกเลิก">⚫ ยกเลิก</option>
     </select>
   </div>
-  <div class="fg">
-    <label>IP Address</label>
-    <input id="addIp" placeholder="(ไม่บังคับ)">
+  <div class="fg" style="display:flex;gap:8px">
+    <div style="flex:1"><label>วันเริ่ม</label><input id="addStart" type="date"></div>
+    <div style="flex:1"><label>กำหนดเสร็จ</label><input id="addDue" type="date"></div>
   </div>
   <div class="fg">
     <label>Note</label>
@@ -282,13 +385,15 @@ button:active{transform:scale(.97)}
     <label>Task Name</label>
     <input id="editTask">
   </div>
-  <div class="fg">
-    <label>Primary Owner</label>
-    <input id="editOwner">
-  </div>
-  <div class="fg">
-    <label>Support</label>
-    <input id="editSupport">
+  <div class="fg" style="display:flex;gap:8px">
+    <div style="flex:1">
+      <label>Primary Owner</label>
+      <select id="editOwner" onchange="onOwnerChange('editOwner')"><option value="">-- เลือก --</option></select>
+    </div>
+    <div style="flex:1">
+      <label>Support</label>
+      <select id="editSupport" onchange="onOwnerChange('editSupport')"><option value="">(ไม่มี)</option></select>
+    </div>
   </div>
   <div class="fg">
     <label>Status</label>
@@ -302,9 +407,10 @@ button:active{transform:scale(.97)}
       <option value="ยกเลิก">⚫ ยกเลิก</option>
     </select>
   </div>
-  <div class="fg">
-    <label>IP</label>
-    <input id="editIp">
+  <div class="fg" style="display:flex;gap:8px">
+    <div style="flex:1"><label>วันเริ่ม</label><input id="editStart" type="date"></div>
+    <div style="flex:1"><label>กำหนดเสร็จ</label><input id="editDue" type="date"></div>
+    <div style="flex:1"><label>วันที่เสร็จ</label><input id="editCompleted" type="date"></div>
   </div>
   <div class="fg">
     <label>Note</label>
@@ -323,6 +429,19 @@ button:active{transform:scale(.97)}
 </div>
 </div>
 
+<!-- Sync confirmation modal -->
+<div class="modal-bg" id="modalSync">
+<div class="modal">
+  <h3>🔄 พบ Task เดียวกันใน Station อื่น</h3>
+  <p style="font-size:.78rem;color:var(--dim);margin-bottom:10px" id="syncMsg"></p>
+  <div id="syncList" style="margin-bottom:14px"></div>
+  <div class="actions">
+    <button onclick="doSyncSingle()">แก้แค่อันนี้</button>
+    <button class="btn-pur" onclick="doSyncAll()">🔄 Sync ทั้งหมด</button>
+  </div>
+</div>
+</div>
+
 <!-- Status popup (positioned absolutely) -->
 <div class="st-menu" id="stMenu" style="display:none"></div>
 
@@ -333,6 +452,10 @@ var stationRows=[], taskRows=[], nodes=[];
 var logs=[], cbCnt=0;
 var expandedIds={}; // จำว่า task list ไหนกางอยู่
 var loadingRows={}; // แถวที่กำลัง saving อยู่
+var filterOwner=''; // filter ตามชื่อคน
+var filterStation=''; // filter ตาม station
+var filterStatus=''; // filter ตาม status
+var showMyView=false; // โหมดดูงานตัวเอง
 var TC={robot:'#ff6b6b',amr:'#51cf66',plc:'#339af0',hmi:'#fcc419',vision:'#f06595',agf:'#ff922b',got:'#66d9e8',other:'#7a8da8'};
 var STATUSES=[
   {v:'ยังไม่เริ่ม',emoji:'⚪',color:'#7b8fad'},
@@ -346,6 +469,30 @@ var STATUSES=[
 
 function mapSt(s){if(!s)return'ยังไม่เริ่ม';s=s.toString().trim();for(var i=0;i<STATUSES.length;i++){if(s===STATUSES[i].v)return s;}var m={'done':'เสร็จแล้วพร้อมใช้งาน','testing':'กำลังทดสอบ','coding':'กำลังทำ','connected':'กำลังทำ','blocked':'ติดปัญหา','cancelled':'ยกเลิก','notstarted':'ยังไม่เริ่ม'};return m[s.toLowerCase()]||'ยังไม่เริ่ม';}
 function stCls(s){var c={'เสร็จแล้วพร้อมใช้งาน':'st-done','กำลังทดสอบ':'st-testing','กำลังทำ':'st-working','เสร็จแล้วรอทดสอบ':'st-waittest','ติดปัญหา':'st-blocked','ยกเลิก':'st-cancel'};return c[s]||'st-notstart';}
+
+// Parse date from various formats: YYYY-MM-DD, DD/MM/YYYY, Google Sheets date serial
+function parseDate(s){
+  if(!s)return null;
+  s=String(s).trim();
+  // Google Sheets serial (number)
+  if(/^\d{5}$/.test(s)){var d=new Date((parseInt(s)-25569)*86400000);return isNaN(d)?null:d;}
+  // Date() string from gviz
+  if(s.indexOf('Date(')>=0){var m=s.match(/Date\((\d+),(\d+),(\d+)/);if(m)return new Date(parseInt(m[1]),parseInt(m[2]),parseInt(m[3]));}
+  // YYYY-MM-DD
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)){var d=new Date(s);return isNaN(d)?null:d;}
+  // DD/MM/YYYY
+  var p=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(p)return new Date(parseInt(p[3]),parseInt(p[2])-1,parseInt(p[1]));
+  var d=new Date(s);return isNaN(d)?null:d;
+}
+
+// Format date for input[type=date] → YYYY-MM-DD
+function formatDateInput(s){
+  var d=parseDate(s);
+  if(!d)return'';
+  var y=d.getFullYear(),m=('0'+(d.getMonth()+1)).slice(-2),dd=('0'+d.getDate()).slice(-2);
+  return y+'-'+m+'-'+dd;
+}
 
 // ============ LOGGING ============
 function log(m){var t=new Date().toLocaleTimeString();logs.push('['+t+'] '+m);var e=document.getElementById('dbg');if(e)e.textContent=logs.join('\n');console.log('[DB] '+m);}
@@ -408,21 +555,45 @@ function trySheets(names){
 function callScript(params){
   return new Promise(function(resolve,reject){
     if(!scriptUrl){reject(new Error('ไม่ได้ใส่ Apps Script URL'));return;}
-    cbCnt++;var cb='scb'+cbCnt+'_'+Date.now();
-    params.callback=cb;
     var qs=[];for(var k in params)qs.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k]));
     var url=scriptUrl+'?'+qs.join('&');
     log('Script call: '+params.action);
-    window[cb]=function(resp){
-      log('Script resp: '+JSON.stringify(resp));
+
+    // ใช้ fetch ก่อน (เร็วกว่า JSONP)
+    if(window.fetch){
+      fetch(url,{redirect:'follow'}).then(function(r){return r.json();}).then(function(data){
+        log('Script resp: '+JSON.stringify(data));
+        if(data&&data.success)resolve(data);
+        else reject(new Error(data?data.message:'Unknown error'));
+      }).catch(function(){
+        // fetch ไม่ได้ → fallback JSONP
+        log('Fetch failed, trying JSONP');
+        callScriptJSONP(params,url).then(resolve).catch(reject);
+      });
+    }else{
+      callScriptJSONP(params,url).then(resolve).catch(reject);
+    }
+  });
+}
+
+function callScriptJSONP(params,baseUrl){
+  return new Promise(function(resolve,reject){
+    cbCnt++;var cb='scb'+cbCnt+'_'+Date.now();
+    var url=baseUrl+'&callback='+encodeURIComponent(cb);
+    var resolved=false;
+    function done(resp){
+      if(resolved)return;resolved=true;
+      delete window[cb];var sc2=document.getElementById('s_'+cb);if(sc2)sc2.remove();
       if(resp&&resp.success)resolve(resp);
-      else reject(new Error(resp?resp.message:'Unknown error'));
-      delete window[cb];var sc=document.getElementById('s_'+cb);if(sc)sc.remove();
-    };
+      else if(resp)reject(new Error(resp.message||'Unknown'));
+      else resolve({success:true,message:'OK'});
+    }
+    window[cb]=function(resp){done(resp);};
     var sc=document.createElement('script');sc.id='s_'+cb;sc.src=url;
-    sc.onerror=function(){log('Script load err');delete window[cb];sc.remove();reject(new Error('Script load failed'));};
+    sc.onload=function(){setTimeout(function(){if(!resolved)done(null);},2000);};
+    sc.onerror=function(){done({success:false,message:'Load failed'});};
     document.body.appendChild(sc);
-    setTimeout(function(){if(window[cb]){delete window[cb];if(sc.parentNode)sc.remove();reject(new Error('Script timeout'));}},20000);
+    setTimeout(function(){if(!resolved)done(null);},10000);
   });
 }
 
@@ -491,7 +662,8 @@ function buildNodes(){
         device:r.device_name||r.name||'',dtype:r.device_type||r.type||'other',
         task:r.task_name||r.task||r.device_name||r.name||'',
         owner:r.primary_owner||r.owner||'',support:r.support||'',
-        status:mapSt(r.status),ip:r.ip||'',note:r.note||'',blocker:r.blocker||''
+        status:mapSt(r.status),ip:r.ip||'',note:r.note||'',blocker:r.blocker||'',
+        start_date:r.start_date||'',due_date:r.due_date||'',completed_date:r.completed_date||''
       };
       allT.push(t);
       var dk=t.device;if(!devMap[dk])devMap[dk]={name:dk,dtype:t.dtype,ip:t.ip,tasks:[]};
@@ -510,23 +682,129 @@ function render(){
   var stations=[],transfers=[],standalones=[];
   for(var i=0;i<nodes.length;i++){var n=nodes[i];if(n.standalone)standalones.push(n);else if(n.type==='transfer')transfers.push(n);else stations.push(n);}
 
-  var doneC=0,progC=0,notC=0,blkC=0;var blockers=[];
-  for(var i=0;i<allT.length;i++){var s=allT[i].status;if(s==='เสร็จแล้วพร้อมใช้งาน')doneC++;else if(s==='ยังไม่เริ่ม')notC++;else if(s==='ติดปัญหา')blkC++;else progC++;if(allT[i].blocker)blockers.push(allT[i]);}
+  var doneC=0,workC=0,waitTestC=0,testingC=0,notC=0,blkC=0,cancelC=0;
+  var blockers=[];var overdue=[];var dueSoon=[];var recentDone=[];
+  var today=new Date();today.setHours(0,0,0,0);
+  var weekAgo=new Date(today);weekAgo.setDate(weekAgo.getDate()-7);
+
+  for(var i=0;i<allT.length;i++){
+    var s=allT[i].status;
+    if(s==='เสร็จแล้วพร้อมใช้งาน')doneC++;
+    else if(s==='กำลังทำ')workC++;
+    else if(s==='เสร็จแล้วรอทดสอบ')waitTestC++;
+    else if(s==='กำลังทดสอบ')testingC++;
+    else if(s==='ติดปัญหา')blkC++;
+    else if(s==='ยกเลิก')cancelC++;
+    else notC++;
+    if(allT[i].blocker)blockers.push(allT[i]);
+
+    // Deadline check
+    if(allT[i].due_date&&s!=='เสร็จแล้วพร้อมใช้งาน'&&s!=='ยกเลิก'){
+      var dd=parseDate(allT[i].due_date);
+      if(dd){
+        var diff=Math.ceil((dd-today)/(1000*60*60*24));
+        allT[i]._daysLeft=diff;
+        if(diff<0)overdue.push(allT[i]);
+        else if(diff<=3)dueSoon.push(allT[i]);
+      }
+    }
+
+    // Recently completed
+    if(s==='เสร็จแล้วพร้อมใช้งาน'&&allT[i].completed_date){
+      var cd=parseDate(allT[i].completed_date);
+      if(cd&&cd>=weekAgo)recentDone.push(allT[i]);
+    }
+  }
+  overdue.sort(function(a,b){return(a._daysLeft||0)-(b._daysLeft||0);});
+  dueSoon.sort(function(a,b){return(a._daysLeft||0)-(b._daysLeft||0);});
+  recentDone.sort(function(a,b){return(parseDate(b.completed_date)||0)-(parseDate(a.completed_date)||0);});
+
+  var activeC=workC+waitTestC+testingC;
   var pct=allT.length?Math.round(doneC/allT.length*100):0;
 
   var h='';
 
-  // Overview
+  // Overview row 1: structure
   h+='<div class="ov-grid">';
   h+='<div class="ov"><div class="v" style="color:#22d3ee">'+stations.length+'</div><div class="l">Process</div></div>';
   h+='<div class="ov"><div class="v" style="color:#a78bfa">'+transfers.length+'</div><div class="l">Transfer</div></div>';
   h+='<div class="ov"><div class="v" style="color:#10b981">'+standalones.length+'</div><div class="l">Standalone</div></div>';
-  h+='<div class="ov"><div class="v" style="color:#ff6b6b">'+allT.length+'</div><div class="l">Tasks</div></div>';
-  h+='<div class="ov"><div class="v" style="color:#69db7c">'+doneC+'</div><div class="l">เสร็จ</div></div>';
-  h+='<div class="ov"><div class="v" style="color:#fcc419">'+progC+'</div><div class="l">กำลังทำ</div></div>';
-  if(blkC)h+='<div class="ov" style="border-color:rgba(255,107,107,.3)"><div class="v" style="color:#ff6b6b">'+blkC+'</div><div class="l">ติดปัญหา</div></div>';
+  h+='<div class="ov"><div class="v" style="color:#e4eaf3">'+allT.length+'</div><div class="l">Total Tasks</div></div>';
   h+='<div class="ov"><div class="v" style="color:#22d3ee">'+pct+'%</div><div class="l">Overall</div></div>';
   h+='</div>';
+
+  // Overview row 2: status breakdown with stacked bar
+  h+='<div class="status-overview">';
+  h+='<div class="so-bar">';
+  if(allT.length>0){
+    var segs=[
+      {c:doneC,color:'#69db7c'},{c:testingC,color:'#fcc419'},{c:waitTestC,color:'#a78bfa'},
+      {c:workC,color:'#339af0'},{c:blkC,color:'#ff6b6b'},{c:notC,color:'#455570'},{c:cancelC,color:'#94a3b8'}
+    ];
+    for(var i=0;i<segs.length;i++){
+      if(segs[i].c>0)h+='<div style="width:'+Math.round(segs[i].c/allT.length*100)+'%;background:'+segs[i].color+';height:100%;border-radius:3px"></div>';
+    }
+  }
+  h+='</div>';
+  h+='<div class="so-chips">';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#69db7c"></span>เสร็จ <b>'+doneC+'</b></div>';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#fcc419"></span>กำลังทดสอบ <b>'+testingC+'</b></div>';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#a78bfa"></span>รอทดสอบ <b>'+waitTestC+'</b></div>';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#339af0"></span>กำลังทำ <b>'+workC+'</b></div>';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#ff6b6b"></span>ติดปัญหา <b>'+blkC+'</b></div>';
+  h+='<div class="so-chip"><span class="so-dot" style="background:#455570"></span>ยังไม่เริ่ม <b>'+notC+'</b></div>';
+  if(cancelC)h+='<div class="so-chip"><span class="so-dot" style="background:#94a3b8"></span>ยกเลิก <b>'+cancelC+'</b></div>';
+  h+='</div></div>';
+
+  // Filter bar
+  h+='<div class="filter-bar">';
+  h+='<div class="f-group"><label>👤 คน:</label><select id="fOwner" onchange="applyFilter()"><option value="">ทุกคน</option>';
+  var ownerList=getOwnerList();
+  for(var i=0;i<ownerList.length;i++){
+    h+='<option value="'+ownerList[i]+'"'+(filterOwner===ownerList[i]?' selected':'')+'>'+ownerList[i]+'</option>';
+  }
+  h+='</select></div>';
+  h+='<div class="f-group"><label>📍 Station:</label><select id="fStation" onchange="applyFilter()"><option value="">ทุก Station</option>';
+  for(var i=0;i<nodes.length;i++){
+    h+='<option value="'+nodes[i].id+'"'+(filterStation===String(nodes[i].id)?' selected':'')+'>'+nodes[i].name+'</option>';
+  }
+  h+='</select></div>';
+  h+='<div class="f-group"><label>📋 Status:</label><select id="fStatus" onchange="applyFilter()"><option value="">ทุก Status</option>';
+  for(var i=0;i<STATUSES.length;i++){
+    h+='<option value="'+STATUSES[i].v+'"'+(filterStatus===STATUSES[i].v?' selected':'')+'>'+STATUSES[i].emoji+' '+STATUSES[i].v+'</option>';
+  }
+  h+='</select></div>';
+  if(filterOwner||filterStation||filterStatus)h+='<button onclick="clearFilter()">✕ ล้าง</button>';
+  h+='<div style="flex:1"></div>';
+  h+='<button class="btn-my'+(showMyView?' active':'')+'" onclick="toggleMyView()">👤 งานของฉัน</button>';
+  h+='</div>';
+
+  // My View panel (ถ้าเลือก owner แล้วกด "งานของฉัน")
+  if(showMyView&&filterOwner){
+    h+=buildMyView(allT,today);
+  }
+
+  // Deadline alerts (filter aware)
+  var fOverdue=filterTasks(overdue);
+  var fDueSoon=filterTasks(dueSoon);
+  if(fOverdue.length>0||fDueSoon.length>0){
+    h+='<div class="sec">⏰ DEADLINE</div>';
+    for(var i=0;i<fOverdue.length;i++){
+      var t=fOverdue[i];
+      h+='<div class="dl-item dl-overdue"><span class="dl-badge dl-badge-red">เกิน '+Math.abs(t._daysLeft)+' วัน</span>';
+      h+='<span class="dl-name">'+t.device+' — '+t.task+'</span>';
+      h+='<span class="dl-owner">'+t.owner+'</span>';
+      h+='<span class="dl-date">กำหนด: '+t.due_date+'</span></div>';
+    }
+    for(var i=0;i<fDueSoon.length;i++){
+      var t=fDueSoon[i];
+      var label=t._daysLeft===0?'วันนี้!':t._daysLeft+' วัน';
+      h+='<div class="dl-item dl-soon"><span class="dl-badge dl-badge-ylw">เหลือ '+label+'</span>';
+      h+='<span class="dl-name">'+t.device+' — '+t.task+'</span>';
+      h+='<span class="dl-owner">'+t.owner+'</span>';
+      h+='<span class="dl-date">กำหนด: '+t.due_date+'</span></div>';
+    }
+  }
 
   // Legend
   h+='<div class="legend">';
@@ -541,21 +819,31 @@ function render(){
   }
 
   // Process + Standalone
-  h+='<div class="sec">📍 PROCESS STATIONS<div class="spacer"></div>';
-  if(scriptUrl)h+='<button class="btn-grn" onclick="openAddModal()">➕ เพิ่ม Task</button>';
-  h+='</div><div class="cards">';
+  // Process + Standalone (filtered)
   var proc=stations.concat(standalones);
-  for(var i=0;i<proc.length;i++)h+=buildCard(proc[i]);
+  var fProc=proc.filter(function(n){return !filterStation||String(n.id)===filterStation;});
+  h+='<div class="sec">📍 PROCESS STATIONS'+(fProc.length!==proc.length?' ('+fProc.length+'/'+proc.length+')':'')+'</div><div class="cards">';
+  for(var i=0;i<fProc.length;i++)h+=buildCard(fProc[i]);
   h+='</div>';
 
-  // Transfers
-  h+='<div class="sec">🔗 TRANSFERS</div><div class="cards">';
-  for(var i=0;i<transfers.length;i++)h+=buildCard(transfers[i]);
-  h+='</div>';
+  // Transfers (filtered)
+  var fTrans=transfers.filter(function(n){return !filterStation||String(n.id)===filterStation;});
+  if(fTrans.length>0){
+    h+='<div class="sec">🔗 TRANSFERS</div><div class="cards">';
+    for(var i=0;i<fTrans.length;i++)h+=buildCard(fTrans[i]);
+    h+='</div>';
+  }
 
-  // Owners
+  // Owners (นับแค่ primary_owner)
   var owners={};
-  for(var i=0;i<allT.length;i++){var o=allT[i].owner;if(!o)continue;if(!owners[o])owners[o]={done:0,prog:0,not:0,total:0};owners[o].total++;if(allT[i].status==='เสร็จแล้วพร้อมใช้งาน')owners[o].done++;else if(allT[i].status==='ยังไม่เริ่ม')owners[o].not++;else owners[o].prog++;}
+  for(var i=0;i<allT.length;i++){
+    var o=allT[i].owner;if(!o)continue;
+    if(!owners[o])owners[o]={done:0,prog:0,not:0,total:0};
+    owners[o].total++;
+    if(allT[i].status==='เสร็จแล้วพร้อมใช้งาน')owners[o].done++;
+    else if(allT[i].status==='ยังไม่เริ่ม')owners[o].not++;
+    else owners[o].prog++;
+  }
   var oArr=[];for(var k in owners)oArr.push([k,owners[k]]);
   oArr.sort(function(a,b){return b[1].total-a[1].total;});
 
@@ -569,6 +857,34 @@ function render(){
     h+='<div style="width:'+Math.round(s.not/tt*100)+'%;background:#455570"></div></div></div></div>';
   }
   h+='</div>';
+
+  // Report button
+  h+='<div class="sec">📊 WEEKLY REPORT<div class="spacer"></div>';
+  h+='<button class="btn-rpt" onclick="loadWeeklyReport()">📊 ดูรายงานประจำสัปดาห์</button>';
+  h+='</div>';
+  h+='<div id="reportPanel"></div>';
+  if(recentDone.length>0){
+    h+='<div class="sec">✅ เพิ่งเสร็จสัปดาห์นี้ ('+recentDone.length+')</div>';
+    h+='<div class="done-list">';
+    for(var i=0;i<recentDone.length;i++){
+      var t=recentDone[i];
+      var cd=parseDate(t.completed_date);
+      var dayLabel='';
+      if(cd){
+        var diffD=Math.floor((today-cd)/(1000*60*60*24));
+        if(diffD===0)dayLabel='วันนี้';
+        else if(diffD===1)dayLabel='เมื่อวาน';
+        else dayLabel=diffD+' วันก่อน';
+      }
+      h+='<div class="done-item">';
+      h+='<span class="done-check">✅</span>';
+      h+='<span class="done-name">'+t.device+' — '+t.task+'</span>';
+      h+='<span class="done-owner">'+t.owner+'</span>';
+      if(dayLabel)h+='<span class="done-date">'+dayLabel+'</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+  }
 
   document.getElementById('content').innerHTML=h;
 
@@ -587,9 +903,11 @@ function buildCard(nd){
 
   var h='<div class="card" style="border-color:'+nd.color+'25">';
   h+='<div class="c-head"><div class="c-icon" style="background:'+nd.color+'">'+icon+'</div>';
-  h+='<div><div class="c-title" style="color:'+nd.color+'">'+nd.name;
+  h+='<div style="flex:1"><div class="c-title" style="color:'+nd.color+'">'+nd.name;
   if(nd.standalone)h+=' <span style="font-size:.5rem;opacity:.5">(SA)</span>';
-  h+='</div><div class="c-sub">'+nd.devices.length+' devices · '+total+' tasks</div></div></div>';
+  h+='</div><div class="c-sub">'+nd.devices.length+' devices · '+total+' tasks</div></div>';
+  if(scriptUrl)h+='<button class="btn-card-add" onclick="event.stopPropagation();openAddForStation('+nd.id+')" title="เพิ่ม Task ใน '+nd.name+'">＋</button>';
+  h+='</div>';
   h+='<div class="c-bar"><div class="c-fill" style="width:'+pct+'%;background:'+nd.color+'"></div></div>';
   h+='<div class="c-pct" style="color:'+nd.color+'">'+done+'/'+total+' ('+pct+'%)</div>';
   h+='<div class="c-body">';
@@ -597,6 +915,12 @@ function buildCard(nd){
   for(var di=0;di<nd.devices.length;di++){
     var dev=nd.devices[di],tc=TC[dev.dtype]||TC.other;
     var dd=0;for(var ti=0;ti<dev.tasks.length;ti++)if(dev.tasks[ti].status==='เสร็จแล้วพร้อมใช้งาน')dd++;
+    
+    // เช็คว่ามี task ที่ตรง filter ไหม
+    var hasMatch=false;
+    for(var ti=0;ti<dev.tasks.length;ti++){if(taskMatchFilter(dev.tasks[ti]))hasMatch=true;}
+    if(!hasMatch&&(filterOwner||filterStatus))continue; // ซ่อน device ทั้งหมดถ้าไม่มี task ตรง filter
+
     var tid='tl_'+nd.id+'_'+di;
 
     h+='<div class="dev" onclick="toggleTL(\''+tid+'\')">';
@@ -610,8 +934,17 @@ function buildCard(nd){
     for(var ti=0;ti<dev.tasks.length;ti++){
       var t=dev.tasks[ti];
       var isLoading=!!loadingRows[t._row];
-      h+='<div class="trow'+(isLoading?' loading':'')+'" id="tr_'+t._row+'">';
+      var matched=taskMatchFilter(t);
+      h+='<div class="trow'+(isLoading?' loading':'')+(matched?'':' dimmed')+'" id="tr_'+t._row+'">';
       h+='<span class="tn">'+t.task+'</span>';
+      // Deadline indicator
+      if(t.due_date&&t.status!=='เสร็จแล้วพร้อมใช้งาน'&&t.status!=='ยกเลิก'){
+        var dd=parseDate(t.due_date);
+        if(dd){var diff=Math.ceil((dd-new Date().setHours(0,0,0,0))/(86400000));
+          if(diff<0)h+='<span class="dl-mini dl-mini-red">เกิน '+Math.abs(diff)+'d</span>';
+          else if(diff<=3)h+='<span class="dl-mini dl-mini-ylw">'+diff+'d</span>';
+        }
+      }
       if(isLoading){
         h+='<span class="saving-label">saving</span><span class="spinner"></span>';
       }else{
@@ -646,8 +979,13 @@ function showStMenu(el,row){
   }
   menu.innerHTML=h;
   menu.style.display='block';
+
+  // Position: ใช้ fixed ตาม viewport
+  var menuH=menu.offsetHeight;
+  var spaceBelow=window.innerHeight-rect.bottom;
+  var topPos=(spaceBelow<menuH+10)?(rect.top-menuH-4):(rect.bottom+4);
   menu.style.left=Math.min(rect.left,window.innerWidth-220)+'px';
-  menu.style.top=(rect.bottom+4)+'px';
+  menu.style.top=Math.max(4,topPos)+'px';
 
   setTimeout(function(){
     document.addEventListener('click',hideStMenu,{once:true});
@@ -655,14 +993,268 @@ function showStMenu(el,row){
 }
 function hideStMenu(){document.getElementById('stMenu').style.display='none';}
 
+// ============ FILTER ============
+function taskMatchFilter(t){
+  if(filterOwner&&t.owner!==filterOwner)return false;
+  if(filterStatus&&t.status!==filterStatus)return false;
+  return true;
+}
+
+function filterTasks(arr){
+  if(!filterOwner&&!filterStation&&!filterStatus)return arr;
+  return arr.filter(function(t){return taskMatchFilter(t);});
+}
+
+function applyFilter(){
+  var o=document.getElementById('fOwner');if(o)filterOwner=o.value;
+  var s=document.getElementById('fStation');if(s)filterStation=s.value;
+  var st=document.getElementById('fStatus');if(st)filterStatus=st.value;
+  if(filterOwner&&!showMyView)showMyView=true;
+  render();
+  // Restore scroll
+}
+
+function clearFilter(){
+  filterOwner='';filterStation='';filterStatus='';showMyView=false;
+  render();
+}
+
+function toggleMyView(){
+  if(!showMyView){
+    if(!filterOwner){
+      // ถ้ายังไม่เลือกคน ให้เลือกก่อน
+      toast('เลือกชื่อจาก filter "คน" ก่อนครับ','info');
+      return;
+    }
+    showMyView=true;
+  }else{
+    showMyView=false;
+  }
+  render();
+}
+
+function buildMyView(allT,today){
+  // กรอง owner ก่อน แล้วกรอง station/status ต่อ
+  var my=allT.filter(function(t){return t.owner===filterOwner;});
+
+  // กรอง station (หา node_id ของแต่ละ task)
+  if(filterStation){
+    my=my.filter(function(t){
+      for(var k=0;k<taskRows.length;k++){
+        if(taskRows[k]._row===t._row)return String(taskRows[k].node_id)===filterStation;
+      }
+      return false;
+    });
+  }
+
+  // กรอง status
+  var myFiltered=filterStatus?my.filter(function(t){return t.status===filterStatus;}):my;
+
+  var myAll=my; // ใช้สำหรับ stats (ก่อนกรอง status)
+  var myNotDone=myFiltered.filter(function(t){return t.status!=='เสร็จแล้วพร้อมใช้งาน'&&t.status!=='ยกเลิก';});
+  var myDone=myFiltered.filter(function(t){return t.status==='เสร็จแล้วพร้อมใช้งาน';});
+  var myBlocked=myFiltered.filter(function(t){return t.status==='ติดปัญหา';});
+
+  // Stats ใช้ myAll (ก่อนกรอง status) เพื่อเห็นภาพรวม
+  var totalAll=myAll.length;
+  var doneAll=myAll.filter(function(t){return t.status==='เสร็จแล้วพร้อมใช้งาน';}).length;
+  var notDoneAll=totalAll-doneAll-myAll.filter(function(t){return t.status==='ยกเลิก';}).length;
+  var blockedAll=myAll.filter(function(t){return t.status==='ติดปัญหา';}).length;
+
+  // คำนวณ deadline ให้ทุก task
+  for(var i=0;i<myNotDone.length;i++){
+    var t=myNotDone[i];
+    if(t.due_date){
+      var dd=parseDate(t.due_date);
+      if(dd)t._daysLeft=Math.ceil((dd-today)/(86400000));
+    }
+  }
+  // Sort by deadline (เกินก่อน → ใกล้ก่อน → ไม่มี deadline ท้ายสุด)
+  myNotDone.sort(function(a,b){
+    var da=a._daysLeft!=null?a._daysLeft:9999;
+    var db=b._daysLeft!=null?b._daysLeft:9999;
+    return da-db;
+  });
+
+  var h='<div class="my-panel">';
+  h+='<div class="my-header"><h2>👤 งานของ '+filterOwner;
+  if(filterStation){for(var i=0;i<nodes.length;i++){if(String(nodes[i].id)===filterStation){h+=' · '+nodes[i].name;break;}}}
+  h+='</h2></div>';
+
+  // Stats
+  h+='<div class="my-stats">';
+  h+='<div class="my-stat"><div class="mv" style="color:var(--tx)">'+totalAll+'</div><div class="ml">ทั้งหมด</div></div>';
+  h+='<div class="my-stat"><div class="mv" style="color:#ff6b6b">'+notDoneAll+'</div><div class="ml">ยังไม่เสร็จ</div></div>';
+  h+='<div class="my-stat"><div class="mv" style="color:#69db7c">'+doneAll+'</div><div class="ml">เสร็จแล้ว</div></div>';
+  if(blockedAll)h+='<div class="my-stat" style="border-color:rgba(255,107,107,.3)"><div class="mv" style="color:#ff6b6b">'+blockedAll+'</div><div class="ml">ติดปัญหา</div></div>';
+  var pct=totalAll?Math.round(doneAll/totalAll*100):0;
+  h+='<div class="my-stat"><div class="mv" style="color:#22d3ee">'+pct+'%</div><div class="ml">progress</div></div>';
+  h+='</div>';
+
+  // Task list sorted by deadline
+  if(myNotDone.length>0){
+    h+='<div class="my-section">📋 งานที่ยังไม่เสร็จ ('+myNotDone.length+')</div>';
+    for(var i=0;i<myNotDone.length;i++){
+      var t=myNotDone[i];
+      // หาชื่อ station
+      var stName='';
+      for(var k=0;k<taskRows.length;k++){
+        if(taskRows[k]._row===t._row){
+          for(var n=0;n<stationRows.length;n++){
+            if(String(stationRows[n].node_id)===String(taskRows[k].node_id)){stName=stationRows[n].name||'';break;}
+          }
+          break;
+        }
+      }
+
+      h+='<div class="my-task">';
+      h+='<span class="mt-station">'+stName+'</span>';
+      h+='<span class="mt-dev">'+t.device+'</span>';
+      h+='<span class="mt-name">'+t.task+'</span>';
+      h+='<span class="st '+stCls(t.status)+'" onclick="showStMenu(this,'+t._row+')" style="cursor:pointer;font-size:.5rem">'+t.status+'</span>';
+
+      // Deadline badge
+      if(t._daysLeft!=null){
+        if(t._daysLeft<0)h+='<span class="mt-dl mt-dl-red">เกิน '+Math.abs(t._daysLeft)+'d</span>';
+        else if(t._daysLeft===0)h+='<span class="mt-dl mt-dl-red">วันนี้!</span>';
+        else if(t._daysLeft<=3)h+='<span class="mt-dl mt-dl-ylw">'+t._daysLeft+'d</span>';
+        else if(t._daysLeft<=7)h+='<span class="mt-dl mt-dl-grn">'+t._daysLeft+'d</span>';
+        else h+='<span class="mt-dl mt-dl-grn">'+t._daysLeft+'d</span>';
+      }else{
+        h+='<span class="mt-dl" style="color:var(--mut)">ไม่มี DL</span>';
+      }
+      h+='</div>';
+    }
+  }
+
+  if(myDone.length>0){
+    h+='<div class="my-section">✅ เสร็จแล้ว ('+myDone.length+')</div>';
+    for(var i=0;i<Math.min(myDone.length,5);i++){
+      var t=myDone[i];
+      h+='<div class="my-task" style="opacity:.5">';
+      h+='<span class="mt-dev">'+t.device+'</span>';
+      h+='<span class="mt-name">'+t.task+'</span>';
+      h+='<span class="st st-done" style="font-size:.5rem">เสร็จ</span>';
+      h+='</div>';
+    }
+    if(myDone.length>5)h+='<div style="text-align:center;font-size:.65rem;color:var(--mut);padding:4px">...และอีก '+(myDone.length-5)+' tasks</div>';
+  }
+
+  h+='</div>';
+  return h;
+}
+
+// ============ SYNC LOGIC ============
+var pendingSync={row:null,newStatus:null,matchRows:[]};
+
+// หา task ที่ device_name + task_name เดียวกัน แต่อยู่คนละ station
+function findDuplicates(row){
+  var src=null;
+  for(var i=0;i<taskRows.length;i++){if(taskRows[i]._row===row){src=taskRows[i];break;}}
+  if(!src)return[];
+  var srcDev=(src.device_name||src.name||'').trim().toLowerCase();
+  var srcTask=(src.task_name||src.task||'').trim().toLowerCase();
+  if(!srcDev||!srcTask)return[];
+  var matches=[];
+  for(var i=0;i<taskRows.length;i++){
+    var r=taskRows[i];
+    if(r._row===row)continue;
+    var dev=(r.device_name||r.name||'').trim().toLowerCase();
+    var task=(r.task_name||r.task||'').trim().toLowerCase();
+    if(dev===srcDev&&task===srcTask){
+      // หาชื่อ station
+      var stName='?';
+      for(var j=0;j<stationRows.length;j++){
+        if(String(stationRows[j].node_id)===String(r.node_id)){stName=stationRows[j].name||stName;break;}
+      }
+      matches.push({row:r._row,station:stName,status:r.status||'',device:r.device_name||r.name||'',task:r.task_name||r.task||''});
+    }
+  }
+  return matches;
+}
+
 function changeStatus(row,newStatus){
   hideStMenu();
+  var dupes=findDuplicates(row);
+  if(dupes.length>0){
+    // มี task เดียวกันใน station อื่น → ถาม sync
+    pendingSync={row:row,newStatus:newStatus,matchRows:dupes,action:'status'};
+    showSyncModal(row,dupes,newStatus);
+  }else{
+    doStatusUpdate(row,newStatus);
+  }
+}
+
+function showSyncModal(row,dupes,newStatus){
+  var src=null;
+  for(var i=0;i<taskRows.length;i++){if(taskRows[i]._row===row){src=taskRows[i];break;}}
+  var devName=src?(src.device_name||src.name||''):'';
+  var taskName=src?(src.task_name||src.task||''):'';
+
+  document.getElementById('syncMsg').innerHTML='<b>'+devName+' — '+taskName+'</b> มีอยู่ใน <b>'+dupes.length+'</b> station อื่น:';
+
+  var h='';
+  for(var i=0;i<dupes.length;i++){
+    var d=dupes[i];
+    h+='<div class="sync-item">';
+    h+='<span class="si-station">'+d.station+'</span>';
+    h+='<span class="si-task">'+d.device+' — '+d.task+'</span>';
+    h+='<span class="st '+stCls(mapSt(d.status))+' si-st">'+mapSt(d.status)+'</span>';
+    h+='</div>';
+  }
+  document.getElementById('syncList').innerHTML=h;
+  openModal('modalSync');
+}
+
+function doSyncSingle(){
+  closeModal('modalSync');
+  if(pendingSync.action==='status'){
+    doStatusUpdate(pendingSync.row,pendingSync.newStatus);
+  }else if(pendingSync.action==='edit'){
+    doEditUpdate(pendingSync.row,pendingSync.editParams,false);
+  }
+}
+
+function doSyncAll(){
+  closeModal('modalSync');
+  if(pendingSync.action==='status'){
+    // อัพเดท row หลัก + ทุก match
+    var allRows=[pendingSync.row];
+    for(var i=0;i<pendingSync.matchRows.length;i++)allRows.push(pendingSync.matchRows[i].row);
+    doStatusUpdateMulti(allRows,pendingSync.newStatus);
+  }else if(pendingSync.action==='edit'){
+    doEditUpdate(pendingSync.row,pendingSync.editParams,true);
+  }
+}
+
+function doStatusUpdate(row,newStatus){
   setRowLoading(row,true);
   callScript({action:'update_status',row:row,status:newStatus}).then(function(){
     toast('✅ อัพเดทสำเร็จ!','ok');
     setRowLoading(row,false);
     quickRefresh();
   }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
+}
+
+function doStatusUpdateMulti(rows,newStatus){
+  for(var i=0;i<rows.length;i++)setRowLoading(rows[i],true);
+  toast('🔄 Sync '+rows.length+' tasks...','info');
+
+  var done=0,total=rows.length;
+  for(var i=0;i<rows.length;i++){
+    (function(r){
+      callScript({action:'update_status',row:r,status:newStatus}).then(function(){
+        setRowLoading(r,false);
+        done++;
+        if(done>=total){toast('✅ Sync สำเร็จ '+total+' tasks!','ok');quickRefresh();}
+      }).catch(function(e){
+        setRowLoading(r,false);
+        done++;
+        toast('❌ row '+r+': '+e.message,'err');
+        if(done>=total)quickRefresh();
+      });
+    })(rows[i]);
+  }
 }
 
 // แสดง/ซ่อน loading บน task row ทันที ไม่ต้อง re-render ทั้งหมด
@@ -681,7 +1273,64 @@ function setRowLoading(row,isLoading){
 }
 
 // ============ ADD TASK ============
+
+// รวบรวมรายชื่อ owner ทั้งหมดจาก tasks ที่มีอยู่
+function getOwnerList(){
+  var owners={};
+  for(var i=0;i<nodes.length;i++){
+    for(var j=0;j<nodes[i].allTasks.length;j++){
+      var t=nodes[i].allTasks[j];
+      if(t.owner)owners[t.owner]=true;
+      if(t.support)owners[t.support]=true;
+    }
+  }
+  var arr=[];for(var k in owners)arr.push(k);
+  arr.sort();return arr;
+}
+
+function populateOwnerSelect(selectId,currentVal){
+  var sel=document.getElementById(selectId);
+  var list=getOwnerList();
+  // เก็บ option แรก (placeholder)
+  var first=sel.options[0]?sel.options[0].outerHTML:'';
+  sel.innerHTML=first;
+  for(var i=0;i<list.length;i++){
+    sel.innerHTML+='<option value="'+list[i]+'">'+list[i]+'</option>';
+  }
+  sel.innerHTML+='<option value="__new__">➕ เพิ่มคนใหม่...</option>';
+  if(currentVal)sel.value=currentVal;
+  // ถ้า currentVal ไม่อยู่ใน list → เพิ่มเข้าไป
+  if(currentVal&&sel.value!==currentVal){
+    var opt=document.createElement('option');
+    opt.value=currentVal;opt.textContent=currentVal;
+    sel.insertBefore(opt,sel.lastChild);
+    sel.value=currentVal;
+  }
+}
+
+// Handle "เพิ่มคนใหม่"
+function onOwnerChange(selectId){
+  var sel=document.getElementById(selectId);
+  if(sel.value==='__new__'){
+    var name=prompt('ชื่อสมาชิกใหม่:');
+    if(name&&name.trim()){
+      var opt=document.createElement('option');
+      opt.value=name.trim();opt.textContent=name.trim();
+      sel.insertBefore(opt,sel.lastChild);
+      sel.value=name.trim();
+    }else{
+      sel.value='';
+    }
+  }
+}
+
 function openAddModal(){
+  if(!scriptUrl){toast('ใส่ Apps Script URL ก่อน','err');return;}
+  openAddForStation(null);
+}
+
+// เปิด Add modal พร้อมเลือก station ไว้ให้
+function openAddForStation(preSelectId){
   if(!scriptUrl){toast('ใส่ Apps Script URL ก่อน','err');return;}
   // Populate station dropdown
   var sel=document.getElementById('addStation');
@@ -690,31 +1339,100 @@ function openAddModal(){
     var n=nodes[i];
     sel.innerHTML+='<option value="'+n.id+'">'+n.name+'</option>';
   }
+  // Pre-select station
+  if(preSelectId!==null)sel.value=String(preSelectId);
   // Clear fields
-  document.getElementById('addDevice').value='';
   document.getElementById('addTask').value='';
-  document.getElementById('addOwner').value='';
-  document.getElementById('addSupport').value='';
+  populateOwnerSelect('addOwner','');
+  populateOwnerSelect('addSupport','');
   document.getElementById('addStatus').value='ยังไม่เริ่ม';
-  document.getElementById('addIp').value='';
+  document.getElementById('addStart').value='';
+  document.getElementById('addDue').value='';
   document.getElementById('addNote').value='';
+  document.getElementById('addNewDev').value='';
+  document.getElementById('addNewDevWrap').style.display='none';
+  onStationChange(); // populate device dropdown
   openModal('modalAdd');
 }
 
+// เมื่อเลือก Station → ดึง device ที่มีอยู่มาใส่ dropdown
+function onStationChange(){
+  var nid=parseInt(document.getElementById('addStation').value);
+  var devSel=document.getElementById('addDevice');
+  devSel.innerHTML='<option value="">-- เลือก Device --</option>';
+  document.getElementById('addNewDevWrap').style.display='none';
+  document.getElementById('addNewDev').value='';
+
+  // หา node
+  var nd=null;
+  for(var i=0;i<nodes.length;i++){if(nodes[i].id===nid){nd=nodes[i];break;}}
+  if(!nd)return;
+
+  // ใส่ device ที่มีอยู่
+  var seen={};
+  for(var i=0;i<nd.devices.length;i++){
+    var d=nd.devices[i];
+    if(!seen[d.name]){
+      seen[d.name]=true;
+      devSel.innerHTML+='<option value="'+d.name+'" data-dtype="'+d.dtype+'" data-ip="'+(d.ip||'')+'">'+d.name+'</option>';
+    }
+  }
+  // ตัวเลือกเพิ่มใหม่
+  devSel.innerHTML+='<option value="__new__">➕ เพิ่ม Device ใหม่...</option>';
+}
+
+// เมื่อเลือก Device → เติม type + ip อัตโนมัติ
+function onDeviceSelect(){
+  var devSel=document.getElementById('addDevice');
+  var val=devSel.value;
+  var newWrap=document.getElementById('addNewDevWrap');
+
+  if(val==='__new__'){
+    newWrap.style.display='block';
+    document.getElementById('addNewDev').focus();
+  }else{
+    newWrap.style.display='none';
+    document.getElementById('addNewDev').value='';
+    // Auto-fill dtype
+    var opt=devSel.options[devSel.selectedIndex];
+    if(opt&&opt.dataset.dtype){
+      document.getElementById('addDtype').value=opt.dataset.dtype;
+    }
+  }
+}
+
 function submitAdd(){
+  var devSel=document.getElementById('addDevice');
+  var deviceName='';
+  if(devSel.value==='__new__'){
+    deviceName=document.getElementById('addNewDev').value.trim();
+  }else{
+    deviceName=devSel.value;
+  }
+
+  // Auto-fill IP from selected device
+  var devSel=document.getElementById('addDevice');
+  var autoIp='';
+  if(devSel.value&&devSel.value!=='__new__'&&devSel.value!==''){
+    var opt=devSel.options[devSel.selectedIndex];
+    if(opt&&opt.dataset.ip)autoIp=opt.dataset.ip;
+  }
+
   var p={
     action:'add_task',
     node_id:document.getElementById('addStation').value,
-    device_name:document.getElementById('addDevice').value.trim(),
+    device_name:deviceName,
     device_type:document.getElementById('addDtype').value,
     task_name:document.getElementById('addTask').value.trim(),
     primary_owner:document.getElementById('addOwner').value.trim(),
     support:document.getElementById('addSupport').value.trim(),
     status:document.getElementById('addStatus').value,
-    ip:document.getElementById('addIp').value.trim(),
-    note:document.getElementById('addNote').value.trim()
+    ip:autoIp,
+    note:document.getElementById('addNote').value.trim(),
+    start_date:document.getElementById('addStart').value,
+    due_date:document.getElementById('addDue').value
   };
-  if(!p.device_name||!p.task_name){toast('กรอก Device Name และ Task Name','err');return;}
+  if(!p.device_name||!p.task_name){toast('เลือก Device และกรอก Task Name','err');return;}
   toast('กำลังเพิ่ม...','info');
   closeModal('modalAdd');
   callScript(p).then(function(r){
@@ -735,10 +1453,12 @@ function openEditModal(row){
   document.getElementById('editDevice').value=t.device_name||t.name||'';
   document.getElementById('editDtype').value=t.device_type||t.type||'other';
   document.getElementById('editTask').value=t.task_name||t.task||'';
-  document.getElementById('editOwner').value=t.primary_owner||t.owner||'';
-  document.getElementById('editSupport').value=t.support||'';
+  populateOwnerSelect('editOwner',t.primary_owner||t.owner||'');
+  populateOwnerSelect('editSupport',t.support||'');
   document.getElementById('editStatus').value=mapSt(t.status);
-  document.getElementById('editIp').value=t.ip||'';
+  document.getElementById('editStart').value=formatDateInput(t.start_date);
+  document.getElementById('editDue').value=formatDateInput(t.due_date);
+  document.getElementById('editCompleted').value=formatDateInput(t.completed_date);
   document.getElementById('editNote').value=t.note||'';
   document.getElementById('editBlocker').value=t.blocker||'';
   openModal('modalEdit');
@@ -751,19 +1471,40 @@ function submitEdit(){
     device_name:document.getElementById('editDevice').value.trim(),
     device_type:document.getElementById('editDtype').value,
     task_name:document.getElementById('editTask').value.trim(),
-    primary_owner:document.getElementById('editOwner').value.trim(),
-    support:document.getElementById('editSupport').value.trim(),
+    primary_owner:document.getElementById('editOwner').value,
+    support:document.getElementById('editSupport').value,
     status:document.getElementById('editStatus').value,
-    ip:document.getElementById('editIp').value.trim(),
     note:document.getElementById('editNote').value.trim(),
-    blocker:document.getElementById('editBlocker').value.trim()
+    blocker:document.getElementById('editBlocker').value.trim(),
+    start_date:document.getElementById('editStart').value,
+    due_date:document.getElementById('editDue').value,
+    completed_date:document.getElementById('editCompleted').value
   };
   closeModal('modalEdit');
+
+  // เช็ค sync เฉพาะถ้า status เปลี่ยน
+  var dupes=findDuplicates(parseInt(row));
+  if(dupes.length>0){
+    pendingSync={row:row,newStatus:p.status,matchRows:dupes,action:'edit',editParams:p};
+    showSyncModal(parseInt(row),dupes,p.status);
+  }else{
+    doEditUpdate(row,p,false);
+  }
+}
+
+function doEditUpdate(row,p,syncAll){
   setRowLoading(row,true);
   callScript(p).then(function(){
     toast('✅ บันทึกสำเร็จ!','ok');
     setRowLoading(row,false);
-    quickRefresh();
+    if(syncAll&&pendingSync.matchRows.length>0){
+      // Sync status ไปยัง duplicates
+      var rows=[];
+      for(var i=0;i<pendingSync.matchRows.length;i++)rows.push(pendingSync.matchRows[i].row);
+      doStatusUpdateMulti(rows,p.status);
+    }else{
+      quickRefresh();
+    }
   }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
 }
 
@@ -777,6 +1518,192 @@ function submitDelete(){
     delete loadingRows[row];
     quickRefresh();
   }).catch(function(e){toast('❌ '+e.message,'err');setRowLoading(row,false);});
+}
+
+// ============ WEEKLY REPORT + SCORING ============
+function loadWeeklyReport(){
+  var panel=document.getElementById('reportPanel');
+  if(!panel)return;
+  if(panel.innerHTML){panel.innerHTML='';return;} // toggle off
+
+  panel.innerHTML='<div class="rpt-loading"><span class="spinner"></span> กำลังโหลด log...</div>';
+
+  // ดึง log จาก Apps Script
+  if(scriptUrl){
+    callScript({action:'get_log'}).then(function(resp){
+      if(resp&&resp.data)buildReport(resp.data);
+      else buildReportFromTasks(); // fallback ถ้าไม่มี log
+    }).catch(function(){
+      buildReportFromTasks(); // fallback
+    });
+  }else{
+    buildReportFromTasks();
+  }
+}
+
+function buildReportFromTasks(){
+  // ถ้าไม่มี log ใช้ข้อมูลจาก tasks + completed_date
+  var allT=[];for(var i=0;i<nodes.length;i++)allT=allT.concat(nodes[i].allTasks);
+  var today=new Date();today.setHours(0,0,0,0);
+  var weekAgo=new Date(today);weekAgo.setDate(weekAgo.getDate()-7);
+
+  var report={};
+  for(var i=0;i<allT.length;i++){
+    var t=allT[i];
+    var o=t.owner;if(!o)continue;
+    if(!report[o])report[o]={total:0,done:0,doneThisWeek:0,onTime:0,late:0,noDeadline:0,blocked:0};
+    report[o].total++;
+    if(t.status==='เสร็จแล้วพร้อมใช้งาน'){
+      report[o].done++;
+      var cd=parseDate(t.completed_date);
+      if(cd&&cd>=weekAgo)report[o].doneThisWeek++;
+      // deadline check
+      var dd=parseDate(t.due_date);
+      if(dd&&cd){
+        if(cd<=dd)report[o].onTime++;else report[o].late++;
+      }else{
+        report[o].noDeadline++;
+      }
+    }
+    if(t.status==='ติดปัญหา')report[o].blocked++;
+  }
+  renderReport(report,'tasks');
+}
+
+function buildReport(logData){
+  var allT=[];for(var i=0;i<nodes.length;i++)allT=allT.concat(nodes[i].allTasks);
+  var today=new Date();today.setHours(0,0,0,0);
+  var weekAgo=new Date(today);weekAgo.setDate(weekAgo.getDate()-7);
+
+  // นับ status changes จาก log ในสัปดาห์นี้
+  var weeklyChanges={};
+  for(var i=0;i<logData.length;i++){
+    var l=logData[i];
+    var ts=parseDate(l.timestamp);
+    if(!ts||ts<weekAgo)continue;
+    var o=l.owner||'';if(!o)continue;
+    if(!weeklyChanges[o])weeklyChanges[o]={completed:0,started:0,changes:0};
+    weeklyChanges[o].changes++;
+    if(l.new_status==='เสร็จแล้วพร้อมใช้งาน')weeklyChanges[o].completed++;
+    if(l.new_status==='กำลังทำ'&&(!l.old_status||l.old_status==='ยังไม่เริ่ม'))weeklyChanges[o].started++;
+  }
+
+  var report={};
+  for(var i=0;i<allT.length;i++){
+    var t=allT[i];
+    var o=t.owner;if(!o)continue;
+    if(!report[o])report[o]={total:0,done:0,doneThisWeek:0,onTime:0,late:0,noDeadline:0,blocked:0,weekStarted:0,weekChanges:0};
+    report[o].total++;
+    if(t.status==='เสร็จแล้วพร้อมใช้งาน'){
+      report[o].done++;
+      var cd=parseDate(t.completed_date);
+      if(cd&&cd>=weekAgo)report[o].doneThisWeek++;
+      var dd=parseDate(t.due_date);
+      if(dd&&cd){
+        if(cd<=dd)report[o].onTime++;else report[o].late++;
+      }else{
+        report[o].noDeadline++;
+      }
+    }
+    if(t.status==='ติดปัญหา')report[o].blocked++;
+  }
+  // Merge weekly log data
+  for(var o in weeklyChanges){
+    if(!report[o])report[o]={total:0,done:0,doneThisWeek:0,onTime:0,late:0,noDeadline:0,blocked:0,weekStarted:0,weekChanges:0};
+    report[o].doneThisWeek=Math.max(report[o].doneThisWeek,weeklyChanges[o].completed);
+    report[o].weekStarted=weeklyChanges[o].started;
+    report[o].weekChanges=weeklyChanges[o].changes;
+  }
+  renderReport(report,'log');
+}
+
+function calcScore(r){
+  // คะแนนเต็ม 100
+  // 1. Progress (40 คะแนน) — % เสร็จ
+  var progressPct=r.total?r.done/r.total:0;
+  var progressScore=progressPct*40;
+
+  // 2. Weekly velocity (30 คะแนน) — เสร็จสัปดาห์นี้กี่ task
+  var weeklyTarget=Math.max(Math.ceil(r.total*0.15),1); // target 15% ต่อสัปดาห์
+  var velocityPct=Math.min(r.doneThisWeek/weeklyTarget,1);
+  var velocityScore=velocityPct*30;
+
+  // 3. On-time rate (20 คะแนน) — เสร็จตาม deadline
+  var deadlineTotal=r.onTime+r.late;
+  var onTimeRate=deadlineTotal>0?r.onTime/deadlineTotal:1;
+  var onTimeScore=onTimeRate*20;
+
+  // 4. No blockers (10 คะแนน) — ไม่มี task ค้างติดปัญหา
+  var blockerPenalty=Math.min(r.blocked*2.5,10);
+  var blockerScore=10-blockerPenalty;
+
+  var total=Math.round(progressScore+velocityScore+onTimeScore+blockerScore);
+  return{total:Math.max(0,Math.min(100,total)),progress:Math.round(progressScore),velocity:Math.round(velocityScore),onTime:Math.round(onTimeScore),blocker:Math.round(blockerScore)};
+}
+
+function getGrade(score){
+  if(score>=90)return{grade:'S',cls:'rpt-badge-s'};
+  if(score>=75)return{grade:'A',cls:'rpt-badge-a'};
+  if(score>=55)return{grade:'B',cls:'rpt-badge-b'};
+  return{grade:'C',cls:'rpt-badge-c'};
+}
+
+function renderReport(report,source){
+  var panel=document.getElementById('reportPanel');
+  if(!panel)return;
+
+  // Sort by score
+  var arr=[];for(var k in report)arr.push([k,report[k]]);
+  for(var i=0;i<arr.length;i++){arr[i][2]=calcScore(arr[i][1]);}
+  arr.sort(function(a,b){return b[2].total-a[2].total;});
+
+  var h='<div class="rpt-panel">';
+  h+='<h2>📊 Weekly Performance Report</h2>';
+  h+='<table class="rpt-table"><thead><tr>';
+  h+='<th>#</th><th>ชื่อ</th><th>Tasks</th><th>เสร็จ</th><th>สัปดาห์นี้</th><th>On-time</th><th>ติดปัญหา</th><th>Progress</th><th>คะแนน</th><th>Grade</th>';
+  h+='</tr></thead><tbody>';
+
+  for(var i=0;i<arr.length;i++){
+    var nm=arr[i][0],r=arr[i][1],sc=arr[i][2];
+    var g=getGrade(sc.total);
+    var pct=r.total?Math.round(r.done/r.total*100):0;
+    var deadlineTotal=r.onTime+r.late;
+    var onTimeStr=deadlineTotal>0?r.onTime+'/'+deadlineTotal:'N/A';
+
+    h+='<tr>';
+    h+='<td style="color:var(--dim)">'+(i+1)+'</td>';
+    h+='<td><div class="rpt-name"><div class="rpt-av">'+nm.charAt(0)+'</div>'+nm+'</div></td>';
+    h+='<td>'+r.total+'</td>';
+    h+='<td style="color:#69db7c;font-weight:600">'+r.done+'</td>';
+    h+='<td style="color:#22d3ee;font-weight:600">'+r.doneThisWeek+'</td>';
+    h+='<td>'+onTimeStr+'</td>';
+    h+='<td>'+(r.blocked>0?'<span style="color:#ff6b6b;font-weight:600">'+r.blocked+'</span>':'0')+'</td>';
+    h+='<td><div class="rpt-bar"><div style="width:'+pct+'%;background:#69db7c"></div></div><span class="rpt-detail">'+pct+'%</span></td>';
+    h+='<td><span class="rpt-score" style="color:'+getScoreColor(sc.total)+'">'+sc.total+'</span></td>';
+    h+='<td><span class="rpt-badge '+g.cls+'">'+g.grade+'</span></td>';
+    h+='</tr>';
+  }
+  h+='</tbody></table>';
+
+  // Scoring explanation
+  h+='<div style="margin-top:12px;padding:10px;background:var(--sf2);border-radius:8px;font-size:.6rem;color:var(--dim)">';
+  h+='<b>เกณฑ์การให้คะแนน (100 คะแนน):</b><br>';
+  h+='• Progress (40) — สัดส่วน task ที่เสร็จแล้ว<br>';
+  h+='• Weekly Velocity (30) — จำนวน task ที่เสร็จสัปดาห์นี้ เทียบกับ target 15%/สัปดาห์<br>';
+  h+='• On-time Rate (20) — เสร็จก่อน/ตรง deadline<br>';
+  h+='• No Blockers (10) — หักคะแนนถ้ามี task ติดปัญหา (หักทีละ 2.5)<br>';
+  h+='<b>Grade:</b> S (90+) · A (75+) · B (55+) · C (<55)';
+  h+='</div>';
+
+  h+='</div>';
+  panel.innerHTML=h;
+}
+
+function getScoreColor(s){
+  if(s>=90)return'#69db7c';
+  if(s>=75)return'#22d3ee';
+  if(s>=55)return'#fcc419';
+  return'#ff6b6b';
 }
 
 // ============ AUTO REFRESH ============
@@ -809,6 +1736,7 @@ function silentRefresh(){
     var newHash=dataHash();
     if(newHash===lastDataHash)return;
     lastDataHash=newHash;
+    loadingRows={}; // ข้อมูลสดแล้ว ล้าง loading ทั้งหมด
 
     buildNodes();
     render();
@@ -824,7 +1752,11 @@ function startAutoRefresh(){
 
 // Immediate refresh (หลังแก้ข้อมูล)
 function quickRefresh(){
-  setTimeout(function(){silentRefresh();},800);
+  // Force re-fetch ทันที ไม่ต้องรอ hash check
+  setTimeout(function(){
+    lastDataHash=''; // force re-render ถึงแม้ hash เดิม
+    silentRefresh();
+  },1500);
 }
 
 // ============ CLICK OUTSIDE MODAL ============
@@ -834,6 +1766,8 @@ document.addEventListener('click',function(e){
 
 // ============ INIT ============
 var initSid=document.getElementById('inpSid');
+var initScript=document.getElementById('inpScript');
+if(initScript&&initScript.value.trim())scriptUrl=initScript.value.trim();
 if(initSid&&initSid.value.trim()){sheetId=initSid.value.trim();doRefresh();}
 </script>
 </body>
